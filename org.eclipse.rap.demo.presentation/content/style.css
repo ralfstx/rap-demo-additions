@@ -1,0 +1,34 @@
+body {
+  color: #4a4a4a;
+  padding: 0;
+  margin: 0 20px;
+  font-family: 'Helvetica Neue', Verdana, 'Lucida Sans', sans-serif;
+  font-size: 14px;
+}
+
+h1, h2, h3 {
+  font-size: 32px;
+}
+
+ul {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+pre {
+  font: 12px Courier, monospace;
+}
+
+div.image {
+  margin: 10px;
+  text-align: center;
+}
+
+div.bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: auto;
+  text-align: center;
+}
