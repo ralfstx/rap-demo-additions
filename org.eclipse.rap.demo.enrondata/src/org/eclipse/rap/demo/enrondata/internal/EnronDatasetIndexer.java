@@ -101,13 +101,23 @@ class EnronDatasetIndexer {
     Collections.sort( list, new Comparator<FileEntry>() {
 
       public int compare( FileEntry file1, FileEntry file2 ) {
+        int result = 0;
         if( file1.type < file2.type ) {
-          return -1;
+          result = -1;
+        } else if( file1.type > file2.type ) {
+          result = 1;
+        } else if( file1.name.endsWith( "." ) && file2.name.endsWith( "." ) ) {
+          int number1 = Integer.parseInt( file1.name.substring( 0, file1.name.length() - 1 ) );
+          int number2 = Integer.parseInt( file2.name.substring( 0, file2.name.length() - 1 ) );
+          if( number1 < number2 ) {
+            result = -1;
+          } else if( number1 > number2 ) {
+            result = 1;
+          }
+        } else {
+          result = file1.name.compareTo( file2.name );
         }
-        if( file1.type > file2.type ) {
-          return 1;
-        }
-        return file1.name.compareTo( file2.name );
+        return result;
       }
     } );
   }
