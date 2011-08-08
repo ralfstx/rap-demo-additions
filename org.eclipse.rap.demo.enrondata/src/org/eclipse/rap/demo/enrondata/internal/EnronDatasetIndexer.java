@@ -1,4 +1,3 @@
-package org.eclipse.rap.demo.enrondata.internal;
 /*******************************************************************************
  * Copyright (c) 2011 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
@@ -9,7 +8,7 @@ package org.eclipse.rap.demo.enrondata.internal;
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-
+package org.eclipse.rap.demo.enrondata.internal;
 
 import java.io.*;
 import java.util.*;
