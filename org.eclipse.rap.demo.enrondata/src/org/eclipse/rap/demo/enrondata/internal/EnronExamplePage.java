@@ -10,18 +10,36 @@
  ******************************************************************************/
 package org.eclipse.rap.demo.enrondata.internal;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.ILazyTreeContentProvider;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.rap.demo.enrondata.internal.EnronDataset.Folder;
 import org.eclipse.rap.demo.enrondata.internal.EnronDataset.Node;
 import org.eclipse.rap.examples.ExampleUtil;
 import org.eclipse.rap.examples.IExamplePage;
+import org.eclipse.rwt.internal.widgets.JSExecutor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Text;
 
 
 public class EnronExamplePage implements IExamplePage {
@@ -30,36 +48,61 @@ public class EnronExamplePage implements IExamplePage {
   private static final String DATASET_DIR_PROP = "org.eclipse.rap.demo.enronDatasetDirectory";
 
   private TreeViewer viewer;
-  private Text text;
+  private Text messageText;
+  private Text senderText;
+  private Text subjectText;
 
   public void createControl( Composite parent ) {
-    parent.setLayout( ExampleUtil.createMainLayout( 2 ) );
-    createTreeArea( parent );
-    createTextArea( parent );
-  }
-
-  private void createTreeArea( Composite parent ) {
+    parent.setLayout( ExampleUtil.createMainLayout( 1 ) );
     Group group = new Group( parent, SWT.NONE );
     group.setText( "Enron Dataset (520.929 items)" );
     group.setLayoutData( ExampleUtil.createFillData() );
-    FillLayout layout = new FillLayout();
+    GridLayout layout = ExampleUtil.createGridLayout();
     layout.marginHeight = 10;
     layout.marginWidth = 10;
     group.setLayout( layout );
-    createTreeViewer( group );
+    createInfoArea( group );
+    createMainArea( group );
   }
 
-  private void createTextArea( Composite parent ) {
-    Group group = new Group( parent, SWT.NONE );
-    group.setLayoutData( ExampleUtil.createFillData() );
-    FillLayout layout = new FillLayout();
-    layout.marginHeight = 5;
-    group.setLayout( layout );
-    createText( group );
+  private void createInfoArea( Composite parent ) {
+    Composite composite = new Composite( parent, SWT.NONE );
+    GridLayout layout = ExampleUtil.createGridLayout();
+    layout.marginBottom = 5;
+    composite.setLayout( layout );
+    composite.setLayoutData( ExampleUtil.createHorzFillData() );
+    Link label = new Link( composite, SWT.WRAP );
+    label.setText( "This example demonstates how a large dataset can be displayed on demand"
+                     + " using a virtual JFace tree viewer with a lazy content provider."
+                     + " The example uses the Enron dataset, a public domain email dataset that"
+                     + " contains half a million emails from about 150 users.\n"
+                     + " The Enron dataset is available at <a>http://www.cs.cmu.edu/~enron/</a>.\n"
+                     + " The source code of this example page currently resides at"
+                     + " <a>https://github.com/ralfstx/rap-demo-additions</a>." );
+    label.setLayoutData( ExampleUtil.createHorzFillData() );
+    label.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        JSExecutor.executeJS( "window.location.href='" + e.text + "';" );
+      }
+    } );
   }
 
-  private void createTreeViewer( Composite parent ) {
-    viewer = new TreeViewer( parent, SWT.SINGLE | SWT.VIRTUAL | SWT.BORDER );
+  private void createMainArea( Composite parent ) {
+    SashForm sashForm = new SashForm( parent, SWT.HORIZONTAL );
+    createTreeArea( sashForm );
+    createContentArea( sashForm );
+    sashForm.setWeights( new int[] { 35, 65 } );
+    sashForm.setLayoutData( ExampleUtil.createFillData() );
+  }
+
+  private void createTreeArea( Composite parent ) {
+    Composite composite = new Composite( parent, SWT.NONE );
+    GridLayout layout = ExampleUtil.createGridLayout();
+    layout.marginRight = 2;
+    composite.setLayout( layout );
+    viewer = new TreeViewer( composite, SWT.SINGLE | SWT.VIRTUAL | SWT.BORDER );
+    viewer.getControl().setLayoutData( ExampleUtil.createFillData() );
     viewer.setLabelProvider( new EnronLabelProvider( parent.getDisplay() ) );
     viewer.setContentProvider( new EnronLazyContentProvider( viewer ) );
     viewer.setInput( getDataSet() );
@@ -75,15 +118,50 @@ public class EnronExamplePage implements IExamplePage {
     } );
   }
 
-  private void createText( Composite parent ) {
-    text = new Text( parent, SWT.MULTI | SWT.WRAP | SWT.BORDER );
+  private void createContentArea( Composite parent ) {
+    Composite composite = new Composite( parent, SWT.BORDER );
+    GridLayout layout = ExampleUtil.createGridLayout();
+    layout.marginLeft = 2;
+    composite.setLayout( layout );
+    createMailHeaderArea( composite );
+    createMailContentArea( composite );
+  }
+
+  private void createMailHeaderArea( Composite parent ) {
+    Composite header = new Composite( parent, SWT.NONE );
+    header.setLayoutData( ExampleUtil.createHorzFillData() );
+    GridLayout headerLayout = new GridLayout( 2, false );
+    headerLayout.horizontalSpacing = 5;
+    headerLayout.verticalSpacing = 5;
+    header.setLayout( headerLayout );
+    Label senderLabel = new Label( header, SWT.NONE );
+    senderLabel.setText( "From:" );
+    senderLabel.setLayoutData( new GridData( SWT.BEGINNING, SWT.CENTER, false, false ) );
+    senderText = new Text( header, SWT.SINGLE | SWT.READ_ONLY );
+    GridData senderTextData = ExampleUtil.createHorzFillData();
+    senderTextData.horizontalIndent = 2;
+    senderText.setLayoutData( senderTextData );
+    Label subjectLabel = new Label( header, SWT.NONE );
+    subjectLabel.setText( "Subject:" );
+    subjectLabel.setLayoutData( new GridData( SWT.BEGINNING, SWT.CENTER, false, false ) );
+    subjectText = new Text( header, SWT.SINGLE | SWT.READ_ONLY );
+    subjectText.setLayoutData( senderTextData );
+  }
+  
+  private void createMailContentArea( Composite parent ) {
+    messageText = new Text( parent, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY );
+    GridData messageTextData = ExampleUtil.createFillData();
+    messageText.setLayoutData( messageTextData );
   }
 
   private void nodeSelected( Node selectedNode ) {
     if( selectedNode != null ) {
       if( selectedNode.getFile().isFile() ) {
         try {
-          text.setText( selectedNode.readContents() );
+          Mail mail = new Mail( selectedNode.readContents() );
+          senderText.setText( mail.getSender() );
+          subjectText.setText( mail.getSubject() );
+          messageText.setText( mail.getContent() );
         } catch( IOException exception ) {
           throw new RuntimeException( "Failed to read contents from node", exception );
         }
@@ -115,6 +193,44 @@ public class EnronExamplePage implements IExamplePage {
       path = DEFAULT_DATASET_DIR;
     }
     return path;
+  }
+
+  private static class Mail {
+    
+    private String sender;
+    private String subject;
+    private String content;
+
+    public Mail( String text ) {
+      String[] lines = text.split( "\n" );
+      StringBuilder buffer = new StringBuilder();
+      boolean headerFinished = false;
+      for( String line : lines ) {
+        if( headerFinished ) {
+          buffer.append( line );
+          buffer.append( "\n" );
+        } else if( line.startsWith( "From:" ) ) {
+          sender = line.substring( "From:".length() ).trim();
+        } else if( line.startsWith( "Subject:" ) ) {
+          subject = line.substring( "Subject:".length() ).trim();
+        } else if( "".equals( line.trim() ) ) {
+          headerFinished = true;
+        }
+      }
+      content = buffer.toString();
+    }
+    
+    public String getSender() {
+      return sender;
+    }
+    
+    public String getSubject() {
+      return subject;
+    }
+    
+    public String getContent() {
+      return content;
+    }
   }
 
   private static final class EnronLabelProvider extends CellLabelProvider {
