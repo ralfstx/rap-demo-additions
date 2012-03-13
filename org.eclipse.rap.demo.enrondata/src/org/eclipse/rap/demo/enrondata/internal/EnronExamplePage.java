@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2011 EclipseSource and others.
+ * Copyright (c) 2009, 2012 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,17 +31,18 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
 
+@SuppressWarnings( "restriction" )
 public class EnronExamplePage implements IExamplePage {
 
   private static final String DEFAULT_DATASET_DIR = "/data/enron/maildir";
@@ -54,22 +55,14 @@ public class EnronExamplePage implements IExamplePage {
 
   public void createControl( Composite parent ) {
     parent.setLayout( ExampleUtil.createMainLayout( 1 ) );
-    Group group = new Group( parent, SWT.NONE );
-    group.setText( "Enron Dataset (520.929 items)" );
-    group.setLayoutData( ExampleUtil.createFillData() );
-    GridLayout layout = ExampleUtil.createGridLayout();
-    layout.marginHeight = 10;
-    layout.marginWidth = 10;
-    group.setLayout( layout );
-    createInfoArea( group );
-    createMainArea( group );
+    createInfoArea( parent );
+    createMainArea( parent );
   }
 
   private void createInfoArea( Composite parent ) {
     Composite composite = new Composite( parent, SWT.NONE );
-    GridLayout layout = ExampleUtil.createGridLayout();
-    layout.marginBottom = 5;
-    composite.setLayout( layout );
+    ExampleUtil.createHeading( composite, "Enron Dataset (520.929 items)", 1 );
+    composite.setLayout( ExampleUtil.createGridLayout( 1, false, true, true ) );
     composite.setLayoutData( ExampleUtil.createHorzFillData() );
     Link label = new Link( composite, SWT.WRAP );
     label.setText( "This example demonstates how a large dataset can be displayed on demand"
@@ -89,7 +82,10 @@ public class EnronExamplePage implements IExamplePage {
   }
 
   private void createMainArea( Composite parent ) {
-    SashForm sashForm = new SashForm( parent, SWT.HORIZONTAL );
+    Composite composite = new Composite( parent, SWT.NONE );
+    composite.setLayout( ExampleUtil.createGridLayout( 1, false, true, true ) );
+    composite.setLayoutData( ExampleUtil.createFillData() );
+    SashForm sashForm = new SashForm( composite, SWT.HORIZONTAL );
     createTreeArea( sashForm );
     createContentArea( sashForm );
     sashForm.setWeights( new int[] { 35, 65 } );
@@ -98,16 +94,14 @@ public class EnronExamplePage implements IExamplePage {
 
   private void createTreeArea( Composite parent ) {
     Composite composite = new Composite( parent, SWT.NONE );
-    GridLayout layout = ExampleUtil.createGridLayout();
-    layout.marginRight = 2;
-    composite.setLayout( layout );
-    viewer = new TreeViewer( composite, SWT.SINGLE | SWT.VIRTUAL | SWT.BORDER );
+    composite.setLayout( ExampleUtil.createGridLayoutWithoutMargin( 1, false ) );
+    viewer = new TreeViewer( composite, SWT.SINGLE | SWT.VIRTUAL | SWT.BORDER | SWT.FULL_SELECTION );
     viewer.getControl().setLayoutData( ExampleUtil.createFillData() );
     viewer.setLabelProvider( new EnronLabelProvider( parent.getDisplay() ) );
     viewer.setContentProvider( new EnronLazyContentProvider( viewer ) );
     viewer.setInput( getDataSet() );
     viewer.addSelectionChangedListener( new ISelectionChangedListener() {
-      
+
       public void selectionChanged( SelectionChangedEvent event ) {
         IStructuredSelection selection = ( IStructuredSelection )event.getSelection();
         Object firstElement = selection.getFirstElement();
@@ -120,8 +114,8 @@ public class EnronExamplePage implements IExamplePage {
 
   private void createContentArea( Composite parent ) {
     Composite composite = new Composite( parent, SWT.BORDER );
-    GridLayout layout = ExampleUtil.createGridLayout();
-    layout.marginLeft = 2;
+    GridLayout layout = ExampleUtil.createGridLayoutWithoutMargin( 1, false );
+    layout.verticalSpacing = 0;
     composite.setLayout( layout );
     createMailHeaderArea( composite );
     createMailContentArea( composite );
@@ -129,8 +123,11 @@ public class EnronExamplePage implements IExamplePage {
 
   private void createMailHeaderArea( Composite parent ) {
     Composite header = new Composite( parent, SWT.NONE );
+    header.setBackground( new Color( header.getDisplay(), 0xe5, 0xe5, 0xe5 ) );
+    header.setBackgroundMode( SWT.INHERIT_FORCE );
     header.setLayoutData( ExampleUtil.createHorzFillData() );
     GridLayout headerLayout = new GridLayout( 2, false );
+    headerLayout.marginLeft = 5;
     headerLayout.horizontalSpacing = 5;
     headerLayout.verticalSpacing = 5;
     header.setLayout( headerLayout );
@@ -147,10 +144,11 @@ public class EnronExamplePage implements IExamplePage {
     subjectText = new Text( header, SWT.SINGLE | SWT.READ_ONLY );
     subjectText.setLayoutData( senderTextData );
   }
-  
+
   private void createMailContentArea( Composite parent ) {
     messageText = new Text( parent, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY );
     GridData messageTextData = ExampleUtil.createFillData();
+    messageTextData.horizontalIndent = 5;
     messageText.setLayoutData( messageTextData );
   }
 
@@ -196,10 +194,10 @@ public class EnronExamplePage implements IExamplePage {
   }
 
   private static class Mail {
-    
+
     private String sender;
     private String subject;
-    private String content;
+    private final String content;
 
     public Mail( String text ) {
       String[] lines = text.split( "\n" );
@@ -219,15 +217,15 @@ public class EnronExamplePage implements IExamplePage {
       }
       content = buffer.toString();
     }
-    
+
     public String getSender() {
       return sender;
     }
-    
+
     public String getSubject() {
       return subject;
     }
-    
+
     public String getContent() {
       return content;
     }
@@ -290,7 +288,15 @@ public class EnronExamplePage implements IExamplePage {
       InputStream inputStream = classLoader.getResourceAsStream( name );
       Image result = null;
       if( inputStream != null ) {
-        result = new Image( device, inputStream );
+        try {
+          result = new Image( device, inputStream );
+        } finally {
+          try {
+            inputStream.close();
+          } catch( IOException e ) {
+            // ignore
+          }
+        }
       }
       return result;
     }
