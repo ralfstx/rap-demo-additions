@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 EclipseSource and others.
+ * Copyright (c) 2011, 2012 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,19 +38,11 @@ final class EnronDataset {
       this.name = name;
     }
 
-    public boolean hasChildren() {
-      return false;
-    }
-
     public int getChildCount() {
       return 0;
     }
 
-    public File getFile() {
-      return new File( parent.file, name );
-    }
-
-    public String getTitle() {
+    public String getName() {
       return name;
     }
 
@@ -59,7 +51,7 @@ final class EnronDataset {
     }
 
     public String readContents() throws IOException {
-      return readFromFile( getFile() );
+      return readFromFile( new File( parent.file, name ) );
     }
 
     protected String readFromFile( File file ) throws FileNotFoundException, IOException {
@@ -88,18 +80,13 @@ final class EnronDataset {
       super( null, null );
       this.file = file;
       readChildrenFromIndex();
-      this.childCount = children.length;
+      childCount = children.length;
     }
 
     private Folder( Folder parent, String name, int count ) {
       super( parent, name );
-      this.file = new File( parent.file, name );
-      this.childCount = count;
-    }
-
-    @Override
-    public boolean hasChildren() {
-      return childCount > 0;
+      file = new File( parent.file, name );
+      childCount = count;
     }
 
     @Override
@@ -115,11 +102,6 @@ final class EnronDataset {
     public Node getChild( int index ) {
       readChildrenFromIndex();
       return children[ index ];
-    }
-
-    public Node[] getChildren() {
-      readChildrenFromIndex();
-      return children;
     }
 
     private void readChildrenFromIndex() {

@@ -154,7 +154,7 @@ public class EnronExamplePage implements IExamplePage {
 
   private void nodeSelected( Node selectedNode ) {
     if( selectedNode != null ) {
-      if( selectedNode.getFile().isFile() ) {
+      if( !( selectedNode instanceof Folder ) ) {
         try {
           Mail mail = new Mail( selectedNode.readContents() );
           senderText.setText( mail.getSender() );
@@ -279,7 +279,7 @@ public class EnronExamplePage implements IExamplePage {
     }
 
     private void updateName( ViewerCell cell, Node node ) {
-      cell.setText( node.getTitle() );
+      cell.setText( node.getName() );
       cell.setImage( node instanceof Folder ? folderImage : fileImage );
     }
 
