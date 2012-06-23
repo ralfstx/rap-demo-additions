@@ -70,22 +70,6 @@ public class MailDir_Test {
   }
 
   @Test
-  public void getParent() {
-    createDirectory( parent.directory, "maildir" );
-    MailDir mailDir = new MailDir( parent, "maildir" );
-
-    assertSame( parent, mailDir.getParent() );
-  }
-
-  @Test
-  public void getName() {
-    createDirectory( parent.directory, "maildir" );
-    MailDir mailDir = new MailDir( parent, "maildir" );
-
-    assertEquals( "maildir", mailDir.getName() );
-  }
-
-  @Test
   public void childCount_empty() {
     createDirectory( parent.directory, "maildir" );
     MailDir mailDir = new MailDir( parent, "maildir" );

@@ -18,28 +18,16 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 
-public class MailFile implements MailNode {
+public class MailFile extends MailNode {
 
-  private final MailDir parent;
   private final File file;
 
-  public MailFile( MailDir parent, String name ) {
-    this.parent = parent;
-    if( name == null ) {
-      throw new NullPointerException( "name is null" );
-    }
+  MailFile( MailDir parent, String name ) {
+    super( parent, name );
     file = new File( parent.directory, name );
     if( !file.isFile() ) {
       throw new IllegalArgumentException( "Not a file: " + file.getAbsolutePath() );
     }
-  }
-
-  public MailNode getParent() {
-    return parent;
-  }
-
-  public String getName() {
-    return file.getName();
   }
 
   public String getContent() throws IOException {

@@ -13,36 +13,25 @@ package org.eclipse.rap.demo.enrondata.internal.model;
 import java.io.File;
 
 
-public class MailDir implements MailNode {
+public class MailDir extends MailNode {
 
-  private MailDir parent;
   final File directory;
 
-  public MailDir( MailDir parent, String name ) {
-    this( new File( parent.directory, name ) );
-    this.parent = parent;
-  }
-
-  MailDir( File directory ) {
-    this.directory = directory;
-    if( directory == null ) {
-      throw new NullPointerException( "directory is null" );
-    }
+  MailDir( MailDir parent, String name ) {
+    super( parent, name );
+    directory = new File( parent.directory, name );
     if( !directory.isDirectory() ) {
       throw new IllegalArgumentException( "Not a directory: " + directory.getAbsolutePath() );
     }
   }
 
+  public MailDir( File directory ) {
+    super( null, directory.getName() );
+    this.directory = directory;
+  }
+
   public int getChildCount() {
     return directory.list().length;
-  }
-
-  public MailNode getParent() {
-    return parent;
-  }
-
-  public String getName() {
-    return directory.getName();
   }
 
   public MailNode getChild( int index ) {
@@ -50,7 +39,7 @@ public class MailDir implements MailNode {
     File[] files = directory.listFiles();
     File file = files[ index ];
     if( file.isDirectory() ) {
-      child = new MailDir( file );
+      child = new MailDir( this, file.getName() );
     } else if( file.isFile() ) {
       child = new MailFile( this, file.getName() );
     }

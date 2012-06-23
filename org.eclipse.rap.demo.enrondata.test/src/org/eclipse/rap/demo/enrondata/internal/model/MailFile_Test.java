@@ -14,7 +14,6 @@ import static org.eclipse.rap.demo.enrondata.test.internal.TestUtil.createFile;
 import static org.eclipse.rap.demo.enrondata.test.internal.TestUtil.createTempDir;
 import static org.eclipse.rap.demo.enrondata.test.internal.TestUtil.delete;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -72,22 +71,6 @@ public class MailFile_Test {
     } catch( IllegalArgumentException exception ) {
       assertTrue( exception.getMessage().startsWith( "Not a file: " ) );
     }
-  }
-
-  @Test
-  public void getParent() {
-    createFile( parent.directory, "test", "" );
-    MailFile mailFile = new MailFile( parent, "test" );
-
-    assertSame( parent, mailFile.getParent() );
-  }
-
-  @Test
-  public void getName() {
-    createFile( parent.directory, "test", "" );
-    MailFile mailFile = new MailFile( parent, "test" );
-
-    assertEquals( "test", mailFile.getName() );
   }
 
   @Test

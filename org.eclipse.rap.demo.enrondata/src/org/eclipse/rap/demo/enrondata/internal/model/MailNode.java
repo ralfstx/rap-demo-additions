@@ -11,10 +11,25 @@
 package org.eclipse.rap.demo.enrondata.internal.model;
 
 
-public interface MailNode {
+public abstract class MailNode {
 
-  String getName();
+  private final MailDir parent;
+  private final String name;
 
-  MailNode getParent();
+  MailNode( MailDir parent, String name ) {
+    if( name == null ) {
+      throw new NullPointerException( "name is null" );
+    }
+    this.parent = parent;
+    this.name = name;
+  }
+
+  public MailNode getParent() {
+    return parent;
+  }
+
+  public String getName() {
+    return name;
+  }
 
 }
