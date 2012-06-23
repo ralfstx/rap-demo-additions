@@ -25,10 +25,12 @@ import org.junit.Test;
 public class MailDir_Test {
 
   private File tmpDir;
+  private MailDir parent;
 
   @Before
   public void setUp() {
     tmpDir = createTempDir();
+    parent = new MailDir( tmpDir );
   }
 
   @After
@@ -36,31 +38,20 @@ public class MailDir_Test {
     delete( tmpDir );
   }
 
-  @Test
-  public void create_withNull() {
-    try {
-      new MailDir( null );
-      fail();
-    } catch( NullPointerException exception ) {
-    }
+  @Test( expected = NullPointerException.class )
+  public void create_withNullParent() {
+    new MailDir( null, "test" );
+  }
+
+  @Test( expected = NullPointerException.class )
+  public void create_withNullName() {
+    new MailDir( parent, null );
   }
 
   @Test
   public void create_withNonExisting() {
-    File directory = new File( "/does/not/exist" );
     try {
-      new MailDir( directory );
-      fail();
-    } catch( IllegalArgumentException exception ) {
-      assertEquals( "Not a directory: /does/not/exist", exception.getMessage() );
-    }
-  }
-
-  @Test
-  public void create_withFile() {
-    File file = createFile( tmpDir, "test", "" );
-    try {
-      new MailDir( file );
+      new MailDir( parent, "does-not-exist" );
       fail();
     } catch( IllegalArgumentException exception ) {
       assertTrue( exception.getMessage().startsWith( "Not a directory: " ) );
@@ -68,40 +59,63 @@ public class MailDir_Test {
   }
 
   @Test
-  public void getName() {
-    File directory = createDirectory( tmpDir, "test" );
-    MailDir mailDir = new MailDir( directory );
+  public void create_withFile() {
+    createFile( parent.directory, "test", "" );
+    try {
+      new MailDir( parent, "test" );
+      fail();
+    } catch( IllegalArgumentException exception ) {
+      assertTrue( exception.getMessage().startsWith( "Not a directory: " ) );
+    }
+  }
 
-    assertEquals( "test", mailDir.getName() );
+  @Test
+  public void getParent() {
+    createDirectory( parent.directory, "maildir" );
+    MailDir mailDir = new MailDir( parent, "maildir" );
+
+    assertSame( parent, mailDir.getParent() );
+  }
+
+  @Test
+  public void getName() {
+    createDirectory( parent.directory, "maildir" );
+    MailDir mailDir = new MailDir( parent, "maildir" );
+
+    assertEquals( "maildir", mailDir.getName() );
   }
 
   @Test
   public void childCount_empty() {
-    MailDir mailDir = new MailDir( tmpDir );
+    createDirectory( parent.directory, "maildir" );
+    MailDir mailDir = new MailDir( parent, "maildir" );
 
     assertEquals( 0, mailDir.getChildCount() );
   }
 
   @Test
   public void childCount_withFolderAndFile() {
-    createDirectory( tmpDir, "child1" );
-    createFile( tmpDir, "child2", "" );
-    MailDir mailDir = new MailDir( tmpDir );
+    File directory = createDirectory( parent.directory, "maildir" );
+    createDirectory( directory, "child1" );
+    createFile( directory, "child2", "" );
+    MailDir mailDir = new MailDir( parent, "maildir" );
 
     assertEquals( 2, mailDir.getChildCount() );
   }
 
   @Test( expected = IndexOutOfBoundsException.class )
   public void getChild_illegalIndex() {
-    MailDir mailDir = new MailDir( tmpDir );
+    createDirectory( parent.directory, "maildir" );
+    MailDir mailDir = new MailDir( parent, "maildir" );
 
     mailDir.getChild( 0 );
   }
 
   @Test
   public void getChild_withDirectory() {
-    createDirectory( tmpDir, "child1" );
-    MailDir mailDir = new MailDir( tmpDir );
+    File directory = createDirectory( parent.directory, "maildir" );
+    createDirectory( directory, "child1" );
+    MailDir mailDir = new MailDir( parent, "maildir" );
 
     MailNode result = mailDir.getChild( 0 );
 
@@ -111,8 +125,9 @@ public class MailDir_Test {
 
   @Test
   public void getChild_withFile() {
-    createFile( tmpDir, "child1", "" );
-    MailDir mailDir = new MailDir( tmpDir );
+    File directory = createDirectory( parent.directory, "maildir" );
+    createFile( directory, "child1", "" );
+    MailDir mailDir = new MailDir( parent, "maildir" );
 
     MailNode result = mailDir.getChild( 0 );
 

@@ -20,16 +20,22 @@ import java.io.Reader;
 
 public class MailFile implements MailNode {
 
+  private final MailDir parent;
   private final File file;
 
-  public MailFile( File file ) {
-    this.file = file;
-    if( file == null ) {
-      throw new NullPointerException( "file is null" );
+  public MailFile( MailDir parent, String name ) {
+    this.parent = parent;
+    if( name == null ) {
+      throw new NullPointerException( "name is null" );
     }
+    file = new File( parent.directory, name );
     if( !file.isFile() ) {
       throw new IllegalArgumentException( "Not a file: " + file.getAbsolutePath() );
     }
+  }
+
+  public MailNode getParent() {
+    return parent;
   }
 
   public String getName() {

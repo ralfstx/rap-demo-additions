@@ -15,4 +15,6 @@ public interface MailNode {
 
   String getName();
 
+  MailNode getParent();
+
 }

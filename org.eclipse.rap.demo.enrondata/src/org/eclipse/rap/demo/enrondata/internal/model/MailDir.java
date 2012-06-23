@@ -15,9 +15,15 @@ import java.io.File;
 
 public class MailDir implements MailNode {
 
-  private final File directory;
+  private MailDir parent;
+  final File directory;
 
-  public MailDir( File directory ) {
+  public MailDir( MailDir parent, String name ) {
+    this( new File( parent.directory, name ) );
+    this.parent = parent;
+  }
+
+  MailDir( File directory ) {
     this.directory = directory;
     if( directory == null ) {
       throw new NullPointerException( "directory is null" );
@@ -31,6 +37,10 @@ public class MailDir implements MailNode {
     return directory.list().length;
   }
 
+  public MailNode getParent() {
+    return parent;
+  }
+
   public String getName() {
     return directory.getName();
   }
@@ -42,7 +52,7 @@ public class MailDir implements MailNode {
     if( file.isDirectory() ) {
       child = new MailDir( file );
     } else if( file.isFile() ) {
-      child = new MailFile( file );
+      child = new MailFile( this, file.getName() );
     }
     return child;
   }
