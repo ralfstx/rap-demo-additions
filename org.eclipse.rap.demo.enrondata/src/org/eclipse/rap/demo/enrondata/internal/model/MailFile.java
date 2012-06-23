@@ -11,6 +11,11 @@
 package org.eclipse.rap.demo.enrondata.internal.model;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 
 public class MailFile implements MailNode {
@@ -30,4 +35,34 @@ public class MailFile implements MailNode {
   public String getName() {
     return file.getName();
   }
+
+  public String getContent() throws IOException {
+    InputStream inputStream = new FileInputStream( file );
+    try {
+      return readFromStream( inputStream );
+    } finally {
+      inputStream.close();
+    }
+  }
+
+  private static String readFromStream( InputStream inputStream ) throws IOException {
+    Reader reader = new InputStreamReader( inputStream, "UTF-8" );
+    try {
+      return readContent( reader );
+    } finally {
+      reader.close();
+    }
+  }
+
+  private static String readContent( Reader reader ) throws IOException {
+    StringBuilder content = new StringBuilder();
+    char[] buffer = new char[ 81920 ];
+    int read = reader.read( buffer );
+    while( read != -1 ) {
+      content.append( buffer, 0, read );
+      read = reader.read( buffer );
+    }
+    return content.toString();
+  }
+
 }

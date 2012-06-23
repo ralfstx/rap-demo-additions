@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -74,6 +75,23 @@ public class MailFile_Test {
     MailFile mailFile = new MailFile( file );
 
     assertEquals( "test", mailFile.getName() );
+  }
+
+  @Test
+  public void getContent_empty() throws IOException {
+    File file = createFile( tmpDir, "test", "" );
+    MailFile mailFile = new MailFile( file );
+
+    assertEquals( "", mailFile.getContent() );
+  }
+
+  @Test
+  public void getContent_withNewlineAndTab() throws IOException {
+    String content = "test\tcontent\nline two\n";
+    File file = createFile( tmpDir, "test", content );
+    MailFile mailFile = new MailFile( file );
+
+    assertEquals( content, mailFile.getContent() );
   }
 
 }
