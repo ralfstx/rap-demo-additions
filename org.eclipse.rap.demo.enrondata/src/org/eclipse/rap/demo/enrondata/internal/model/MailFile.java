@@ -30,6 +30,11 @@ public class MailFile extends MailNode {
     }
   }
 
+  @Override
+  public int getChildCount() {
+    return 0;
+  }
+
   public String getContent() throws IOException {
     InputStream inputStream = new FileInputStream( file );
     try {

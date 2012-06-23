@@ -74,6 +74,14 @@ public class MailFile_Test {
   }
 
   @Test
+  public void getChildCount() {
+    createFile( parent.directory, "test", "" );
+    MailFile mailFile = new MailFile( parent, "test" );
+
+    assertEquals( 0, mailFile.getChildCount() );
+  }
+
+  @Test
   public void getContent_empty() throws IOException {
     createFile( parent.directory, "test", "" );
     MailFile mailFile = new MailFile( parent, "test" );

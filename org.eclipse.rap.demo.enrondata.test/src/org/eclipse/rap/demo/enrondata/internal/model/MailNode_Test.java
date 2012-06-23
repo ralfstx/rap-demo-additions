@@ -41,28 +41,41 @@ public class MailNode_Test {
 
   @Test( expected = NullPointerException.class )
   public void create_withNullName() {
-    new MailNode( parent, null ) {};
+    new TestMailNode( parent, null );
   }
 
   @Test
   public void getParent_withNull() {
-    MailNode mailNode = new MailNode( null, "test" ) {};
+    MailNode mailNode = new TestMailNode( null, "test" );
 
     assertNull( mailNode.getParent() );
   }
 
   @Test
   public void getParent() {
-    MailNode mailFile = new MailNode( parent, "test" ) {};
+    MailNode mailFile = new TestMailNode( parent, "test" );
 
     assertSame( parent, mailFile.getParent() );
   }
 
   @Test
   public void getName() {
-    MailNode mailFile = new MailNode( parent, "test" ) {};
+    MailNode mailFile = new TestMailNode( parent, "test" );
 
     assertEquals( "test", mailFile.getName() );
+  }
+
+  private static class TestMailNode extends MailNode {
+
+    TestMailNode( MailDir parent, String name ) {
+      super( parent, name );
+    }
+
+    @Override
+    public int getChildCount() {
+      return 0;
+    }
+
   }
 
 }

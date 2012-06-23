@@ -32,4 +32,6 @@ public abstract class MailNode {
     return name;
   }
 
+  public abstract int getChildCount();
+
 }
