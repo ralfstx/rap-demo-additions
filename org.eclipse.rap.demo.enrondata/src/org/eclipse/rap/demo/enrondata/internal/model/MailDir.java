@@ -28,11 +28,23 @@ public class MailDir implements MailNode {
   }
 
   public int getChildCount() {
-    return directory.listFiles().length;
+    return directory.list().length;
   }
 
   public String getName() {
     return directory.getName();
+  }
+
+  public MailNode getChild( int index ) {
+    MailNode child = null;
+    File[] files = directory.listFiles();
+    File file = files[ index ];
+    if( file.isDirectory() ) {
+      child = new MailDir( file );
+    } else if( file.isFile() ) {
+      child = new MailFile( file );
+    }
+    return child;
   }
 
 }

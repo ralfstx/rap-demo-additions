@@ -90,4 +90,34 @@ public class MailDir_Test {
 
     assertEquals( 2, mailDir.getChildCount() );
   }
+
+  @Test( expected = IndexOutOfBoundsException.class )
+  public void getChild_illegalIndex() {
+    MailDir mailDir = new MailDir( tmpDir );
+
+    mailDir.getChild( 0 );
+  }
+
+  @Test
+  public void getChild_withDirectory() {
+    createDirectory( tmpDir, "child1" );
+    MailDir mailDir = new MailDir( tmpDir );
+
+    MailNode result = mailDir.getChild( 0 );
+
+    assertTrue( result instanceof MailDir );
+    assertEquals( "child1", result.getName() );
+  }
+
+  @Test
+  public void getChild_withFile() {
+    createFile( tmpDir, "child1", "" );
+    MailDir mailDir = new MailDir( tmpDir );
+
+    MailNode result = mailDir.getChild( 0 );
+
+    assertTrue( result instanceof MailFile );
+    assertEquals( "child1", result.getName() );
+  }
+
 }
