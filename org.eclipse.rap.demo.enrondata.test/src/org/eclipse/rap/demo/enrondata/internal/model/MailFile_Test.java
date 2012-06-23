@@ -82,20 +82,11 @@ public class MailFile_Test {
   }
 
   @Test
-  public void getContent_empty() throws IOException {
-    createFile( parent.directory, "test", "" );
+  public void getContent() throws IOException {
+    createFile( parent.directory, "test", "content" );
     MailFile mailFile = new MailFile( parent, "test" );
 
-    assertEquals( "", mailFile.getContent() );
-  }
-
-  @Test
-  public void getContent_withNewlineAndTab() throws IOException {
-    String content = "test\tcontent\nline two\n";
-    createFile( parent.directory, "test", content );
-    MailFile mailFile = new MailFile( parent, "test" );
-
-    assertEquals( content, mailFile.getContent() );
+    assertEquals( "content", mailFile.getContent() );
   }
 
 }
