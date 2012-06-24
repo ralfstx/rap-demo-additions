@@ -23,6 +23,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.rap.demo.enrondata.internal.model.MailDir;
+import org.eclipse.rap.demo.enrondata.internal.model.MailDirIndex;
 import org.eclipse.rap.demo.enrondata.internal.model.MailFile;
 import org.eclipse.rap.demo.enrondata.internal.model.MailNode;
 import org.eclipse.rap.examples.ExampleUtil;
@@ -170,12 +171,15 @@ public class EnronExamplePage implements IExamplePage {
   }
 
   private static MailNode getDataSet() {
+    File root = getRootDirectory();
+    MailDir mailDir = new MailDir( root );
+    MailDirIndex index = new MailDirIndex( mailDir );
     try {
-      File root = getRootDirectory();
-      return new EnronDataset( root ).getRootNode();
+      index.create();
     } catch( IOException exception ) {
       throw new IllegalStateException( "Could not access data model", exception );
     }
+    return mailDir;
   }
 
   private static File getRootDirectory() {

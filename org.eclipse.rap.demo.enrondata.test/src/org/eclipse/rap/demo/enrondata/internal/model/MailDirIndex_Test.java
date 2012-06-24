@@ -61,41 +61,90 @@ public class MailDirIndex_Test {
   }
 
   @Test
-  public void writeNodes_createsFile() throws IOException {
-    createFile( parent.directory, "child1", "" );
-    MailNode child1 = new MailFile( parent, "child1" );
+  public void create_createsIndexFile() throws IOException {
+    File indexFile = createFile( parent.directory, ".index", "" );
+    new MailFile( parent, "child1" );
     MailDirIndex index = new MailDirIndex( parent );
 
-    index.writeNodes( child1 );
+    index.create();
 
-    assertTrue( index.exists() );
+    assertTrue( indexFile.exists() );
   }
 
   @Test
-  public void readNodes() throws IOException {
-    createDirectory( parent.directory, "child1" );
-    MailDir child1 = new MailDir( parent, "child1", 0 );
-    createFile( parent.directory, "child2", "" );
-    MailFile child2 = new MailFile( parent, "child2" );
+  public void create_doesNotTouchExistingIndexFile() throws IOException {
+    File indexFile = createFile( parent.directory, ".index", "\n" );
+    new MailFile( parent, "child1" );
     MailDirIndex index = new MailDirIndex( parent );
-    index.writeNodes( child1, child2 );
+
+    index.create();
+
+    assertEquals( 1, indexFile.length() );
+  }
+
+  @Test
+  public void create_withFile() throws IOException {
+    createFile( parent.directory, "child", "" );
+    MailDirIndex index = new MailDirIndex( parent );
+
+    index.create();
 
     MailNode[] nodes = index.readNodes();
+    assertEquals( 1, nodes.length );
+    MailFile found = ( MailFile )nodes[ 0 ];
+    assertSame( parent, found.getParent() );
+    assertEquals( "child", found.getName() );
+  }
 
+  @Test
+  public void create_withDirectory() throws IOException {
+    createDirectory( parent.directory, "child" );
+    MailDirIndex index = new MailDirIndex( parent );
+
+    index.create();
+
+    MailNode[] nodes = index.readNodes();
+    assertEquals( 1, nodes.length );
+    MailDir found = ( MailDir )nodes[ 0 ];
+    assertSame( parent, found.getParent() );
+    assertEquals( "child", found.getName() );
+  }
+
+  @Test
+  public void create_includesAllChildren() throws IOException {
+    createFile( parent.directory, "child1", "" );
+    createDirectory( parent.directory, "child2" );
+    MailDirIndex index = new MailDirIndex( parent );
+
+    index.create();
+
+    MailNode[] nodes = index.readNodes();
     assertEquals( 2, nodes.length );
-    MailDir found1 = ( MailDir )nodes[ 0 ];
-    MailFile found2 = ( MailFile )nodes[ 1 ];
-    assertSame( parent, found1.getParent() );
-    assertEquals( "child1", found1.getName() );
-    assertSame( parent, found2.getParent() );
-    assertEquals( "child2", found2.getName() );
+  }
+
+  @Test
+  public void create_worksRecursively() throws IOException {
+    File dir_1 = createDirectory( parent.directory, "dir-1" );
+    File dir_2 = createDirectory( parent.directory, "dir-2" );
+    File dir_1_1 = createDirectory( dir_1, "dir-1-1" );
+    createFile( dir_1_1, "file-1-1-1", "" );
+    createFile( dir_1_1, "file-1-1-2", "" );
+    MailDirIndex index = new MailDirIndex( parent );
+
+    index.create();
+
+    assertTrue( new File( dir_1, ".index" ).exists() );
+    assertTrue( new File( dir_2, ".index" ).exists() );
+    assertTrue( new File( dir_1_1, ".index" ).exists() );
   }
 
   @Test
   public void readNodes_setsChildCount() throws IOException {
-    MailDir child = new MailDir( parent, "child", 2 );
+    File childDir = createDirectory( parent.directory, "child" );
+    createDirectory( childDir, "nested-1" );
+    createDirectory( childDir, "nested-2" );
     MailDirIndex index = new MailDirIndex( parent );
-    index.writeNodes( child );
+    index.create();
 
     MailNode[] nodes = index.readNodes();
 

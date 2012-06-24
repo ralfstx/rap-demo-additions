@@ -80,17 +80,23 @@ public class MailDirIndex {
     return new MailFile( mailDir, name );
   }
 
-  public void writeNodes( MailNode... nodes ) throws IOException {
-    String content = createIndex( nodes );
-    writeToFile( indexFile, content );
+  public void create() throws IOException {
+    if( !indexFile.exists() ) {
+      StringBuilder builder = new StringBuilder();
+      int childCount = mailDir.getChildCount();
+      for( int i = 0; i < childCount; i++ ) {
+        MailNode child = mailDir.getChild( i );
+        createIndex( child );
+        appendNode( builder, child );
+      }
+      writeToFile( indexFile, builder.toString() );
+    }
   }
 
-  private static String createIndex( MailNode... nodes ) {
-    StringBuilder builder = new StringBuilder();
-    for( MailNode node : nodes ) {
-      appendNode( builder, node );
+  private void createIndex( MailNode child ) throws IOException {
+    if( child instanceof MailDir ) {
+      new MailDirIndex( ( MailDir )child ).create();
     }
-    return builder.toString();
   }
 
   private static void appendNode( StringBuilder stringBuilder, MailNode node ) {
