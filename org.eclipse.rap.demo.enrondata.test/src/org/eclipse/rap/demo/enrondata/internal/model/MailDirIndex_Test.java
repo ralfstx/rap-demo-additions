@@ -47,28 +47,28 @@ public class MailDirIndex_Test {
 
   @Test
   public void exists_falseWithoutIndexFile() {
-    MailDirIndex mailDirIndex = new MailDirIndex( parent );
+    MailDirIndex index = new MailDirIndex( parent );
 
-    assertFalse( mailDirIndex.exists() );
+    assertFalse( index.exists() );
   }
 
   @Test
   public void exists_trueWithIndexFile() {
     createFile( parent.directory, ".index", "" );
-    MailDirIndex mailDirIndex = new MailDirIndex( parent );
+    MailDirIndex index = new MailDirIndex( parent );
 
-    assertTrue( mailDirIndex.exists() );
+    assertTrue( index.exists() );
   }
 
   @Test
   public void writeNodes_createsFile() throws IOException {
     createFile( parent.directory, "child1", "" );
     MailNode child1 = new MailFile( parent, "child1" );
-    MailDirIndex mailDirIndex = new MailDirIndex( parent );
+    MailDirIndex index = new MailDirIndex( parent );
 
-    mailDirIndex.writeNodes( child1 );
+    index.writeNodes( child1 );
 
-    assertTrue( mailDirIndex.exists() );
+    assertTrue( index.exists() );
   }
 
   @Test
@@ -77,10 +77,10 @@ public class MailDirIndex_Test {
     MailDir child1 = new MailDir( parent, "child1", 0 );
     createFile( parent.directory, "child2", "" );
     MailFile child2 = new MailFile( parent, "child2" );
-    MailDirIndex mailDirIndex = new MailDirIndex( parent );
-    mailDirIndex.writeNodes( child1, child2 );
+    MailDirIndex index = new MailDirIndex( parent );
+    index.writeNodes( child1, child2 );
 
-    MailNode[] nodes = mailDirIndex.readNodes();
+    MailNode[] nodes = index.readNodes();
 
     assertEquals( 2, nodes.length );
     MailDir found1 = ( MailDir )nodes[ 0 ];
@@ -93,12 +93,11 @@ public class MailDirIndex_Test {
 
   @Test
   public void readNodes_setsChildCount() throws IOException {
-    createDirectory( parent.directory, "maildir" );
-    MailDir mailDir = new MailDir( parent, "maildir", 2 );
-    MailDirIndex mailDirIndex = new MailDirIndex( parent );
-    mailDirIndex.writeNodes( mailDir );
+    MailDir child = new MailDir( parent, "child", 2 );
+    MailDirIndex index = new MailDirIndex( parent );
+    index.writeNodes( child );
 
-    MailNode[] nodes = mailDirIndex.readNodes();
+    MailNode[] nodes = index.readNodes();
 
     MailDir found = ( MailDir )nodes[ 0 ];
     assertEquals( 2, found.getChildCount() );
@@ -107,9 +106,9 @@ public class MailDirIndex_Test {
   @Test
   public void readNodes_ignoresEmptyLinesInIndex() throws IOException {
     createFile( parent.directory, ".index", "\n\n" );
-    MailDirIndex mailDirIndex = new MailDirIndex( parent );
+    MailDirIndex index = new MailDirIndex( parent );
 
-    MailNode[] nodes = mailDirIndex.readNodes();
+    MailNode[] nodes = index.readNodes();
 
     assertEquals( 0, nodes.length );
   }
@@ -117,10 +116,10 @@ public class MailDirIndex_Test {
   @Test
   public void readNodes_failsWithCorruptedIndex() throws IOException {
     createFile( parent.directory, ".index", "foo\n" );
-    MailDirIndex mailDirIndex = new MailDirIndex( parent );
+    MailDirIndex index = new MailDirIndex( parent );
 
     try {
-      mailDirIndex.readNodes();
+      index.readNodes();
       fail();
     } catch( RuntimeException e ) {
     }
@@ -129,10 +128,10 @@ public class MailDirIndex_Test {
   @Test
   public void readNodes_failsWithCorruptedIndex2() throws IOException {
     createFile( parent.directory, ".index", "x\tfoo\tbar\n" );
-    MailDirIndex mailDirIndex = new MailDirIndex( parent );
+    MailDirIndex index = new MailDirIndex( parent );
 
     try {
-      mailDirIndex.readNodes();
+      index.readNodes();
       fail();
     } catch( RuntimeException e ) {
     }

@@ -21,9 +21,6 @@ public class MailFile extends MailNode {
   MailFile( MailDir parent, String name ) {
     super( parent, name );
     file = new File( parent.directory, name );
-    if( !file.isFile() ) {
-      throw new IllegalArgumentException( "Not a file: " + file.getAbsolutePath() );
-    }
   }
 
   @Override
@@ -32,7 +29,14 @@ public class MailFile extends MailNode {
   }
 
   public String getContent() throws IOException {
+    checkFile();
     return FileUtil.readFromFile( file );
+  }
+
+  private void checkFile() {
+    if( !file.isFile() ) {
+      throw new IllegalArgumentException( "Not a file: " + file.getAbsolutePath() );
+    }
   }
 
 }

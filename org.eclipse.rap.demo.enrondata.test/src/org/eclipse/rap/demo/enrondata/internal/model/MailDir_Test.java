@@ -49,9 +49,11 @@ public class MailDir_Test {
   }
 
   @Test
-  public void create_withNonExisting() {
+  public void resolveChildren_failsWithNonExistingDirectory() {
+    MailDir mailDir = new MailDir( parent, "does-not-exist", -1 );
+
     try {
-      new MailDir( parent, "does-not-exist", 0 );
+      mailDir.getChildCount();
       fail();
     } catch( IllegalArgumentException exception ) {
       assertTrue( exception.getMessage().startsWith( "Not a directory: " ) );
@@ -59,10 +61,12 @@ public class MailDir_Test {
   }
 
   @Test
-  public void create_withFile() {
+  public void resolveChildren_failsWithFileInsteadDirectory() {
     createFile( parent.directory, "test", "" );
+    MailDir mailDir = new MailDir( parent, "test", -1 );
+
     try {
-      new MailDir( parent, "test", 0 );
+      mailDir.getChildCount();
       fail();
     } catch( IllegalArgumentException exception ) {
       assertTrue( exception.getMessage().startsWith( "Not a directory: " ) );
@@ -98,7 +102,6 @@ public class MailDir_Test {
 
   @Test
   public void childCount_respectsValueFromConstructor() {
-    createDirectory( parent.directory, "maildir" );
     MailDir mailDir = new MailDir( parent, "maildir", 23 );
 
     assertEquals( 23, mailDir.getChildCount() );
@@ -114,8 +117,8 @@ public class MailDir_Test {
 
   @Test
   public void getChild_withDirectory() {
-    File directory = createDirectory( parent.directory, "maildir" );
-    createDirectory( directory, "child1" );
+    File root = createDirectory( parent.directory, "maildir" );
+    createDirectory( root, "child1" );
     MailDir mailDir = new MailDir( parent, "maildir", 1 );
 
     MailNode result = mailDir.getChild( 0 );
@@ -126,8 +129,8 @@ public class MailDir_Test {
 
   @Test
   public void getChild_withFile() {
-    File directory = createDirectory( parent.directory, "maildir" );
-    createFile( directory, "child1", "" );
+    File root = createDirectory( parent.directory, "maildir" );
+    createFile( root, "child1", "" );
     MailDir mailDir = new MailDir( parent, "maildir", 1 );
 
     MailNode result = mailDir.getChild( 0 );
@@ -138,8 +141,8 @@ public class MailDir_Test {
 
   @Test
   public void getChild_withDotFile() {
-    File directory = createDirectory( parent.directory, "maildir" );
-    createFile( directory, ".hidden", "" );
+    File root = createDirectory( parent.directory, "maildir" );
+    createFile( root, ".hidden", "" );
     MailDir mailDir = new MailDir( parent, "maildir", -1 );
 
     try {

@@ -33,9 +33,6 @@ public class MailDir extends MailNode {
   MailDir( MailDir parent, String name, int childCount ) {
     super( parent, name );
     directory = new File( parent.directory, name );
-    if( !directory.isDirectory() ) {
-      throw new IllegalArgumentException( "Not a directory: " + directory.getAbsolutePath() );
-    }
     this.childCount = childCount;
   }
 
@@ -71,10 +68,17 @@ public class MailDir extends MailNode {
   }
 
   private void readChildrenFromFile() {
+    checkDirectory();
     File[] files = directory.listFiles( filter );
     children = new MailNode[ files.length ];
     for( int i = 0; i < files.length; i++ ) {
       children[ i ] = createNode( files[ i ] );
+    }
+  }
+
+  private void checkDirectory() {
+    if( !directory.isDirectory() ) {
+      throw new IllegalArgumentException( "Not a directory: " + directory.getAbsolutePath() );
     }
   }
 

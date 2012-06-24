@@ -53,32 +53,35 @@ public class MailFile_Test {
   }
 
   @Test
-  public void create_withNonExisting() {
-    try {
-      new MailFile( parent, "does-not-exist" );
-      fail();
-    } catch( IllegalArgumentException exception ) {
-      assertTrue( exception.getMessage().startsWith( "Not a file: " ) );
-    }
-  }
-
-  @Test
-  public void create_withDirectory() {
-    TestUtil.createDirectory( parent.directory, "subdir" );
-    try {
-      new MailFile( parent, "subdir" );
-      fail();
-    } catch( IllegalArgumentException exception ) {
-      assertTrue( exception.getMessage().startsWith( "Not a file: " ) );
-    }
-  }
-
-  @Test
   public void getChildCount() {
-    createFile( parent.directory, "test", "" );
     MailFile mailFile = new MailFile( parent, "test" );
 
     assertEquals( 0, mailFile.getChildCount() );
+  }
+
+  @Test
+  public void getContent_failsWithNonExistingFile() throws IOException {
+    MailFile mailFile = new MailFile( parent, "does-not-exist" );
+
+    try {
+      mailFile.getContent();
+      fail();
+    } catch( IllegalArgumentException exception ) {
+      assertTrue( exception.getMessage().startsWith( "Not a file: " ) );
+    }
+  }
+
+  @Test
+  public void getContent_failsWithDirectoryInsteadFile() throws IOException {
+    TestUtil.createDirectory( parent.directory, "subdir" );
+    MailFile mailFile = new MailFile( parent, "subdir" );
+
+    try {
+      mailFile.getContent();
+      fail();
+    } catch( IllegalArgumentException exception ) {
+      assertTrue( exception.getMessage().startsWith( "Not a file: " ) );
+    }
   }
 
   @Test
