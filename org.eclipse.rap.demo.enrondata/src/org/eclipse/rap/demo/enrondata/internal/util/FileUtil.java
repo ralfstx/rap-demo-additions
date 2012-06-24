@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.rap.demo.enrondata.internal.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -34,7 +35,7 @@ public class FileUtil {
   }
 
   private static String readFromStream( InputStream inputStream ) throws IOException {
-    Reader reader = new InputStreamReader( inputStream, "UTF-8" );
+    Reader reader = new BufferedReader( new InputStreamReader( inputStream, "UTF-8" ) );
     try {
       return readContent( reader );
     } finally {
