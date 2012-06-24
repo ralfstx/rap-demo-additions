@@ -12,10 +12,14 @@ package org.eclipse.rap.demo.enrondata.internal.model;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 
 
 public class FileUtil {
@@ -47,6 +51,25 @@ public class FileUtil {
       read = reader.read( buffer );
     }
     return content.toString();
+  }
+
+  public static void writeToFile( File file, String content ) throws IOException {
+    OutputStream outputStream = new FileOutputStream( file );
+    try {
+      writeToStream( outputStream, content );
+    } finally {
+      outputStream.close();
+    }
+  }
+
+  private static void writeToStream( OutputStream outputStream, String content ) throws IOException
+  {
+    Writer writer = new OutputStreamWriter( outputStream, "UTF-8" );
+    try {
+      writer.write( content );
+    } finally {
+      writer.close();
+    }
   }
 
 }

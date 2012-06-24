@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.rap.demo.enrondata.test.internal.TestUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +54,26 @@ public class FileUtil_Test {
     String result = FileUtil.readFromFile( file );
 
     assertEquals( content, result );
+  }
+
+  @Test
+  public void writeToFile_createsFileEvenWithEmptyContent() throws IOException {
+    File file = new File( tmpDir, "test" );
+
+    FileUtil.writeToFile( file, "" );
+
+    assertTrue( file.exists() );
+    assertEquals( 0, file.length() );
+  }
+
+  @Test
+  public void writeToFile_withTabsAndNewLines() throws IOException {
+    String content = "Line\tOne\nLine\tTwo\n";
+    File file = new File( tmpDir, "test" );
+
+    FileUtil.writeToFile( file, content );
+
+    assertEquals( content, TestUtil.readFromFile( file ) );
   }
 
 }
