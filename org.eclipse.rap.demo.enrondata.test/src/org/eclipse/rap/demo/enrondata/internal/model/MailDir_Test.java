@@ -40,18 +40,18 @@ public class MailDir_Test {
 
   @Test( expected = NullPointerException.class )
   public void create_withNullParent() {
-    new MailDir( null, "test" );
+    new MailDir( null, "test", 0 );
   }
 
   @Test( expected = NullPointerException.class )
   public void create_withNullName() {
-    new MailDir( parent, null );
+    new MailDir( parent, null, 0 );
   }
 
   @Test
   public void create_withNonExisting() {
     try {
-      new MailDir( parent, "does-not-exist" );
+      new MailDir( parent, "does-not-exist", 0 );
       fail();
     } catch( IllegalArgumentException exception ) {
       assertTrue( exception.getMessage().startsWith( "Not a directory: " ) );
@@ -62,7 +62,7 @@ public class MailDir_Test {
   public void create_withFile() {
     createFile( parent.directory, "test", "" );
     try {
-      new MailDir( parent, "test" );
+      new MailDir( parent, "test", 0 );
       fail();
     } catch( IllegalArgumentException exception ) {
       assertTrue( exception.getMessage().startsWith( "Not a directory: " ) );
@@ -72,7 +72,7 @@ public class MailDir_Test {
   @Test
   public void childCount_empty() {
     createDirectory( parent.directory, "maildir" );
-    MailDir mailDir = new MailDir( parent, "maildir" );
+    MailDir mailDir = new MailDir( parent, "maildir", -1 );
 
     assertEquals( 0, mailDir.getChildCount() );
   }
@@ -82,25 +82,32 @@ public class MailDir_Test {
     File directory = createDirectory( parent.directory, "maildir" );
     createDirectory( directory, "child1" );
     createFile( directory, "child2", "" );
-    MailDir mailDir = new MailDir( parent, "maildir" );
+    MailDir mailDir = new MailDir( parent, "maildir", -1 );
 
     assertEquals( 2, mailDir.getChildCount() );
   }
 
   @Test
-  public void childCount_withDotFile() {
+  public void childCount_ignoresDotFile() {
     File directory = createDirectory( parent.directory, "maildir" );
-    createDirectory( directory, "child1" );
     createFile( directory, ".hidden", "" );
-    MailDir mailDir = new MailDir( parent, "maildir" );
+    MailDir mailDir = new MailDir( parent, "maildir", -1 );
 
-    assertEquals( 1, mailDir.getChildCount() );
+    assertEquals( 0, mailDir.getChildCount() );
+  }
+
+  @Test
+  public void childCount_respectsValueFromConstructor() {
+    createDirectory( parent.directory, "maildir" );
+    MailDir mailDir = new MailDir( parent, "maildir", 23 );
+
+    assertEquals( 23, mailDir.getChildCount() );
   }
 
   @Test( expected = IndexOutOfBoundsException.class )
   public void getChild_illegalIndex() {
     createDirectory( parent.directory, "maildir" );
-    MailDir mailDir = new MailDir( parent, "maildir" );
+    MailDir mailDir = new MailDir( parent, "maildir", 0 );
 
     mailDir.getChild( 0 );
   }
@@ -109,7 +116,7 @@ public class MailDir_Test {
   public void getChild_withDirectory() {
     File directory = createDirectory( parent.directory, "maildir" );
     createDirectory( directory, "child1" );
-    MailDir mailDir = new MailDir( parent, "maildir" );
+    MailDir mailDir = new MailDir( parent, "maildir", 1 );
 
     MailNode result = mailDir.getChild( 0 );
 
@@ -121,7 +128,7 @@ public class MailDir_Test {
   public void getChild_withFile() {
     File directory = createDirectory( parent.directory, "maildir" );
     createFile( directory, "child1", "" );
-    MailDir mailDir = new MailDir( parent, "maildir" );
+    MailDir mailDir = new MailDir( parent, "maildir", 1 );
 
     MailNode result = mailDir.getChild( 0 );
 
@@ -133,7 +140,7 @@ public class MailDir_Test {
   public void getChild_withDotFile() {
     File directory = createDirectory( parent.directory, "maildir" );
     createFile( directory, ".hidden", "" );
-    MailDir mailDir = new MailDir( parent, "maildir" );
+    MailDir mailDir = new MailDir( parent, "maildir", -1 );
 
     try {
       mailDir.getChild( 0 );

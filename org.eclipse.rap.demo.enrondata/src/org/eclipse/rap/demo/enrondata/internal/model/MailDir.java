@@ -17,24 +17,31 @@ import java.io.FilenameFilter;
 public class MailDir extends MailNode {
 
   private static final FilenameFilter filter = new IndexFileFilter();
-  final File directory;
 
-  MailDir( MailDir parent, String name ) {
+  final File directory;
+  private int childCount;
+
+  public MailDir( File directory ) {
+    super( null, directory.getName() );
+    this.directory = directory;
+    childCount = -1;
+  }
+
+  MailDir( MailDir parent, String name, int childCount ) {
     super( parent, name );
     directory = new File( parent.directory, name );
     if( !directory.isDirectory() ) {
       throw new IllegalArgumentException( "Not a directory: " + directory.getAbsolutePath() );
     }
-  }
-
-  public MailDir( File directory ) {
-    super( null, directory.getName() );
-    this.directory = directory;
+    this.childCount = childCount;
   }
 
   @Override
   public int getChildCount() {
-    return directory.list( filter ).length;
+    if( childCount == -1 ) {
+      childCount = directory.list( filter ).length;
+    }
+    return childCount;
   }
 
   public MailNode getChild( int index ) {
@@ -42,7 +49,7 @@ public class MailDir extends MailNode {
     File[] files = directory.listFiles( filter );
     File file = files[ index ];
     if( file.isDirectory() ) {
-      child = new MailDir( this, file.getName() );
+      child = new MailDir( this, file.getName(), -1 );
     } else if( file.isFile() ) {
       child = new MailFile( this, file.getName() );
     }
