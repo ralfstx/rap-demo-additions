@@ -12,6 +12,7 @@ package org.eclipse.rap.demo.enrondata.internal.model;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 
 
 public class MailDir extends MailNode {
@@ -20,6 +21,8 @@ public class MailDir extends MailNode {
 
   final File directory;
   private int childCount;
+
+  private MailNode[] children;
 
   public MailDir( File directory ) {
     super( null, directory.getName() );
@@ -39,21 +42,52 @@ public class MailDir extends MailNode {
   @Override
   public int getChildCount() {
     if( childCount == -1 ) {
-      childCount = directory.list( filter ).length;
+      resolveChildren();
+      childCount = children.length;
     }
     return childCount;
   }
 
   public MailNode getChild( int index ) {
-    MailNode child = null;
-    File[] files = directory.listFiles( filter );
-    File file = files[ index ];
-    if( file.isDirectory() ) {
-      child = new MailDir( this, file.getName(), -1 );
-    } else if( file.isFile() ) {
-      child = new MailFile( this, file.getName() );
+    resolveChildren();
+    return children[ index ];
+  }
+
+  private void resolveChildren() {
+    MailDirIndex dirIndex = new MailDirIndex( this );
+    if( dirIndex.exists() ) {
+      readChildrenFromIndex( dirIndex );
+    } else {
+      readChildrenFromFile();
     }
-    return child;
+  }
+
+  private void readChildrenFromIndex( MailDirIndex dirIndex ) {
+    try {
+      children = dirIndex.readNodes();
+    } catch( IOException exception ) {
+      throw new RuntimeException( "Failed to read from index file", exception );
+    }
+  }
+
+  private void readChildrenFromFile() {
+    File[] files = directory.listFiles( filter );
+    children = new MailNode[ files.length ];
+    for( int i = 0; i < files.length; i++ ) {
+      children[ i ] = createNode( files[ i ] );
+    }
+  }
+
+  private MailNode createNode( File file ) {
+    MailNode node;
+    if( file.isDirectory() ) {
+      node = new MailDir( this, file.getName(), -1 );
+    } else if( file.isFile() ) {
+      node = new MailFile( this, file.getName() );
+    } else {
+      throw new RuntimeException( "Unexpected file type: " + file.getAbsolutePath() );
+    }
+    return node;
   }
 
   private static final class IndexFileFilter implements FilenameFilter {
