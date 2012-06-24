@@ -11,10 +11,12 @@
 package org.eclipse.rap.demo.enrondata.internal.model;
 
 import java.io.File;
+import java.io.FilenameFilter;
 
 
 public class MailDir extends MailNode {
 
+  private static final FilenameFilter filter = new IndexFileFilter();
   final File directory;
 
   MailDir( MailDir parent, String name ) {
@@ -30,13 +32,14 @@ public class MailDir extends MailNode {
     this.directory = directory;
   }
 
+  @Override
   public int getChildCount() {
-    return directory.list().length;
+    return directory.list( filter ).length;
   }
 
   public MailNode getChild( int index ) {
     MailNode child = null;
-    File[] files = directory.listFiles();
+    File[] files = directory.listFiles( filter );
     File file = files[ index ];
     if( file.isDirectory() ) {
       child = new MailDir( this, file.getName() );
@@ -44,6 +47,13 @@ public class MailDir extends MailNode {
       child = new MailFile( this, file.getName() );
     }
     return child;
+  }
+
+  private static final class IndexFileFilter implements FilenameFilter {
+
+    public boolean accept( File dir, String name ) {
+      return !name.startsWith( "." );
+    }
   }
 
 }

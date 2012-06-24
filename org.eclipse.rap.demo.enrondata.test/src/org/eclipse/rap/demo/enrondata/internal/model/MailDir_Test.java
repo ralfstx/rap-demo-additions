@@ -87,6 +87,16 @@ public class MailDir_Test {
     assertEquals( 2, mailDir.getChildCount() );
   }
 
+  @Test
+  public void childCount_withDotFile() {
+    File directory = createDirectory( parent.directory, "maildir" );
+    createDirectory( directory, "child1" );
+    createFile( directory, ".hidden", "" );
+    MailDir mailDir = new MailDir( parent, "maildir" );
+
+    assertEquals( 1, mailDir.getChildCount() );
+  }
+
   @Test( expected = IndexOutOfBoundsException.class )
   public void getChild_illegalIndex() {
     createDirectory( parent.directory, "maildir" );
@@ -117,6 +127,19 @@ public class MailDir_Test {
 
     assertTrue( result instanceof MailFile );
     assertEquals( "child1", result.getName() );
+  }
+
+  @Test
+  public void getChild_withDotFile() {
+    File directory = createDirectory( parent.directory, "maildir" );
+    createFile( directory, ".hidden", "" );
+    MailDir mailDir = new MailDir( parent, "maildir" );
+
+    try {
+      mailDir.getChild( 0 );
+      fail();
+    } catch( IndexOutOfBoundsException exception ) {
+    }
   }
 
 }
