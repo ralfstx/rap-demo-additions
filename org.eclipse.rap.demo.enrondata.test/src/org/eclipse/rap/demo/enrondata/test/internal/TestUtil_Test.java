@@ -10,8 +10,12 @@
  ******************************************************************************/
 package org.eclipse.rap.demo.enrondata.test.internal;
 
+import static org.eclipse.rap.demo.enrondata.test.internal.TestUtil.createDirectory;
+import static org.eclipse.rap.demo.enrondata.test.internal.TestUtil.createFile;
 import static org.eclipse.rap.demo.enrondata.test.internal.TestUtil.createTempDir;
 import static org.eclipse.rap.demo.enrondata.test.internal.TestUtil.delete;
+import static org.eclipse.rap.demo.enrondata.test.internal.TestUtil.readFromFile;
+import static org.eclipse.rap.demo.enrondata.test.internal.TestUtil.writeToFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import java.io.File;
@@ -37,9 +41,9 @@ public class TestUtil_Test {
   }
 
   @Test
-  public void createDirectory() {
+  public void createDirectory_createsNewDirectory() {
     tmpDir = createTempDir();
-    File directory = TestUtil.createDirectory( tmpDir, "test" );
+    File directory = createDirectory( tmpDir, "test" );
 
     assertTrue( directory.isDirectory() );
     assertEquals( tmpDir, directory.getParentFile() );
@@ -47,9 +51,9 @@ public class TestUtil_Test {
   }
 
   @Test
-  public void createFile_empty() {
+  public void createFile_withEmptyContent() {
     tmpDir = createTempDir();
-    File file = TestUtil.createFile( tmpDir, "test", "" );
+    File file = createFile( tmpDir, "test", "" );
 
     assertTrue( file.isFile() );
     assertEquals( tmpDir, file.getParentFile() );
@@ -60,22 +64,32 @@ public class TestUtil_Test {
   @Test
   public void createFile_withContent() {
     tmpDir = createTempDir();
-    File file = TestUtil.createFile( tmpDir, "test", "test content" );
+    File file = createFile( tmpDir, "test", "test content" );
 
     assertTrue( file.isFile() );
     assertEquals( tmpDir, file.getParentFile() );
     assertEquals( "test", file.getName() );
-    assertEquals( "test content", TestUtil.readFromFile( file ) );
+    assertEquals( "test content", readFromFile( file ) );
   }
 
   @Test
-  public void writeToFile() {
+  public void writeToFile_createsFile() {
     tmpDir = createTempDir();
-    File file = TestUtil.createFile( tmpDir, "test", "" );
+    File file = new File( tmpDir, "test" );
 
-    TestUtil.writeToFile( file, "test content" );
+    writeToFile( file, "test content" );
 
-    assertEquals( "test content", TestUtil.readFromFile( file ) );
+    assertEquals( "test content", readFromFile( file ) );
+  }
+
+  @Test
+  public void writeToFile_overwritesExistingFile() {
+    tmpDir = createTempDir();
+    File file = createFile( tmpDir, "test", "" );
+
+    writeToFile( file, "test content" );
+
+    assertEquals( "test content", readFromFile( file ) );
   }
 
 }

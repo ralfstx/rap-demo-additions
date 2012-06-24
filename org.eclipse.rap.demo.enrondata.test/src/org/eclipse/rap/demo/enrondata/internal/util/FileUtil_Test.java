@@ -19,7 +19,6 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.rap.demo.enrondata.test.internal.TestUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,7 +74,7 @@ public class FileUtil_Test {
 
     writeToFile( file, content );
 
-    assertEquals( content, TestUtil.readFromFile( file ) );
+    assertEquals( content, readFromFile( file ) );
   }
 
 }

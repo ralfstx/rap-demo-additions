@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.rap.demo.enrondata.internal.model;
 
+import static org.eclipse.rap.demo.enrondata.test.internal.TestUtil.createDirectory;
 import static org.eclipse.rap.demo.enrondata.test.internal.TestUtil.createFile;
 import static org.eclipse.rap.demo.enrondata.test.internal.TestUtil.createTempDir;
 import static org.eclipse.rap.demo.enrondata.test.internal.TestUtil.delete;
@@ -20,7 +21,6 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.rap.demo.enrondata.test.internal.TestUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,7 +73,7 @@ public class MailFile_Test {
 
   @Test
   public void getContent_failsWithDirectoryInsteadFile() throws IOException {
-    TestUtil.createDirectory( parent.directory, "subdir" );
+    createDirectory( parent.directory, "subdir" );
     MailFile mailFile = new MailFile( parent, "subdir" );
 
     try {
