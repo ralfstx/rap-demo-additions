@@ -12,7 +12,6 @@ package org.eclipse.rap.demo.enrondata.internal;
 
 import org.eclipse.rap.examples.IExampleContribution;
 import org.eclipse.rap.examples.IExamplePage;
-import org.eclipse.rwt.application.ApplicationConfiguration;
 
 
 public class EnronDataExampleContribution implements IExampleContribution {
@@ -29,6 +28,4 @@ public class EnronDataExampleContribution implements IExampleContribution {
     return new EnronExamplePage();
   }
 
-  public void configure( ApplicationConfiguration configuration ) {
-  }
 }

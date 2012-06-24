@@ -22,8 +22,9 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.rap.demo.enrondata.internal.EnronDataset.Folder;
-import org.eclipse.rap.demo.enrondata.internal.EnronDataset.Node;
+import org.eclipse.rap.demo.enrondata.internal.model.MailDir;
+import org.eclipse.rap.demo.enrondata.internal.model.MailFile;
+import org.eclipse.rap.demo.enrondata.internal.model.MailNode;
 import org.eclipse.rap.examples.ExampleUtil;
 import org.eclipse.rap.examples.IExamplePage;
 import org.eclipse.rwt.internal.widgets.JSExecutor;
@@ -105,8 +106,8 @@ public class EnronExamplePage implements IExamplePage {
       public void selectionChanged( SelectionChangedEvent event ) {
         IStructuredSelection selection = ( IStructuredSelection )event.getSelection();
         Object firstElement = selection.getFirstElement();
-        if( firstElement instanceof Node ) {
-          nodeSelected( ( Node )firstElement );
+        if( firstElement instanceof MailNode ) {
+          nodeSelected( ( MailNode )firstElement );
         }
       }
     } );
@@ -152,11 +153,12 @@ public class EnronExamplePage implements IExamplePage {
     messageText.setLayoutData( messageTextData );
   }
 
-  private void nodeSelected( Node selectedNode ) {
+  private void nodeSelected( MailNode selectedNode ) {
     if( selectedNode != null ) {
-      if( !( selectedNode instanceof Folder ) ) {
+      if( selectedNode instanceof MailFile ) {
+        MailFile selectedFile = ( MailFile )selectedNode;
         try {
-          Mail mail = new Mail( selectedNode.readContents() );
+          Mail mail = new Mail( selectedFile.getContent() );
           senderText.setText( mail.getSender() );
           subjectText.setText( mail.getSubject() );
           messageText.setText( mail.getContent() );
@@ -167,7 +169,7 @@ public class EnronExamplePage implements IExamplePage {
     }
   }
 
-  private static Node getDataSet() {
+  private static MailNode getDataSet() {
     try {
       File root = getRootDirectory();
       return new EnronDataset( root ).getRootNode();
@@ -251,8 +253,8 @@ public class EnronExamplePage implements IExamplePage {
     @Override
     public void update( final ViewerCell cell ) {
       Object element = cell.getElement();
-      if( element instanceof Node ) {
-        Node node = ( Node )element;
+      if( element instanceof MailNode ) {
+        MailNode node = ( MailNode )element;
         int columnIndex = cell.getColumnIndex();
         switch( columnIndex ) {
           case COLUMN_NAME:
@@ -278,9 +280,9 @@ public class EnronExamplePage implements IExamplePage {
       return result;
     }
 
-    private void updateName( ViewerCell cell, Node node ) {
+    private void updateName( ViewerCell cell, MailNode node ) {
       cell.setText( node.getName() );
-      cell.setImage( node instanceof Folder ? folderImage : fileImage );
+      cell.setImage( node instanceof MailDir ? folderImage : fileImage );
     }
 
     private static Image createImage( Device device, String name ) {
@@ -312,16 +314,16 @@ public class EnronExamplePage implements IExamplePage {
 
     public Object getParent( Object element ) {
       Object result = null;
-      if( element instanceof Node ) {
-        result = ( ( Node )element ).getParent();
+      if( element instanceof MailNode ) {
+        result = ( ( MailNode )element ).getParent();
       }
       return result;
     }
 
     public void updateElement( Object parent, int index ) {
-      if( parent instanceof Folder ) {
-        Folder folder = ( Folder )parent;
-        Node node = folder.getChild( index );
+      if( parent instanceof MailDir ) {
+        MailDir folder = ( MailDir )parent;
+        MailNode node = folder.getChild( index );
         if( node != null ) {
           viewer.replace( parent, index, node );
           viewer.setChildCount( node, node.getChildCount() );
@@ -330,8 +332,8 @@ public class EnronExamplePage implements IExamplePage {
     }
 
     public void updateChildCount( Object element, int currentChildCount ) {
-      if( element instanceof Node ) {
-        Node node = ( Node )element;
+      if( element instanceof MailNode ) {
+        MailNode node = ( MailNode )element;
         int childCount = node.getChildCount();
         if( childCount != currentChildCount ) {
             viewer.setChildCount( element, childCount );

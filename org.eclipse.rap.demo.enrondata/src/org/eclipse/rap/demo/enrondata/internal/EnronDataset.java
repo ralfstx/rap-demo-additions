@@ -10,9 +10,11 @@
  ******************************************************************************/
 package org.eclipse.rap.demo.enrondata.internal;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
+
+import org.eclipse.rap.demo.enrondata.internal.model.MailDir;
+import org.eclipse.rap.demo.enrondata.internal.model.MailNode;
 
 
 final class EnronDataset {
@@ -23,126 +25,9 @@ final class EnronDataset {
     this.root = root;
   }
 
-  public Node getRootNode() throws IOException {
+  public MailNode getRootNode() throws IOException {
     new EnronDatasetIndexer( root ).index();
-    return new Folder( root );
-  }
-
-  static class Node {
-
-    private final Folder parent;
-    private final String name;
-
-    private Node( Folder parent, String name ) {
-      this.parent = parent;
-      this.name = name;
-    }
-
-    public int getChildCount() {
-      return 0;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public Folder getParent() {
-      return parent;
-    }
-
-    public String readContents() throws IOException {
-      return readFromFile( new File( parent.file, name ) );
-    }
-
-    protected String readFromFile( File file ) throws FileNotFoundException, IOException {
-      StringBuilder resultBuffer = new StringBuilder();
-      FileReader reader = new FileReader( file );
-      try {
-        char[] charBuffer = new char[ 8196 ];
-        int charsRead = 0;
-        while( ( charsRead = reader.read( charBuffer  ) ) != -1 ) {
-          resultBuffer.append( charBuffer, 0, charsRead );
-        }
-      } finally {
-        reader.close();
-      }
-      return resultBuffer.toString();
-    }
-  }
-
-  static class Folder extends Node {
-
-    private final File file;
-    private final int childCount;
-    private Node[] children;
-
-    private Folder( File file ) {
-      super( null, null );
-      this.file = file;
-      readChildrenFromIndex();
-      childCount = children.length;
-    }
-
-    private Folder( Folder parent, String name, int count ) {
-      super( parent, name );
-      file = new File( parent.file, name );
-      childCount = count;
-    }
-
-    @Override
-    public int getChildCount() {
-      return childCount;
-    }
-
-    @Override
-    public String readContents() throws IOException {
-      return "";
-    }
-
-    public Node getChild( int index ) {
-      readChildrenFromIndex();
-      return children[ index ];
-    }
-
-    private void readChildrenFromIndex() {
-      if( children == null ) {
-        try {
-          children = readIndex();
-          if( childCount != 0 && children.length != childCount ) {
-            throw new RuntimeException( "Children count in index ("
-                                        + children.length
-                                        + ") does not match default ("
-                                        + childCount
-                                        + "): "
-                                        + file.getAbsolutePath()
-                                        + " " );
-          }
-        } catch( IOException e ) {
-          throw new RuntimeException( "Failed to read index for " + file.getAbsolutePath() );
-        }
-      }
-    }
-
-    private Node[] readIndex() throws IOException {
-      File indexFile = new File( file, ".index" );
-      String indexString = readFromFile( indexFile );
-      String[] lines = indexString.split( "\n" );
-      List<Node> nodes = new ArrayList<Node>();
-      for( int i = 0; i < lines.length; i++ ) {
-        String line = lines[ i ];
-        String[] parts = line.split( "\t" );
-        if( parts.length == 3 ) {
-          if( "d".equals( parts[ 0 ] ) ) {
-            nodes.add( new Folder( this, parts[ 1 ], Integer.parseInt( parts[ 2 ] ) ) );
-          } else if( "f".equals( parts[ 0 ] ) ) {
-            nodes.add( new Node( this, parts[ 1 ] ) );
-          }
-        }
-      }
-      Node[] result = new Node[ nodes.size() ];
-      nodes.toArray( result );
-      return result;
-    }
+    return new MailDir( root );
   }
 
 }
