@@ -67,30 +67,12 @@ public class TestUtil {
     }
   }
 
-  public static void writeToFile( File file, String content ) {
-    try {
-      tryWriteToFile( file, content );
-    } catch( IOException exception ) {
-      String message = "Failed to write to file: " + file.getAbsolutePath();
-      throw new RuntimeException( message, exception );
-    }
-  }
-
   private static String tryReadFromFile( File file ) throws IOException {
     InputStream inputStream = new FileInputStream( file );
     try {
       return readFromStream( inputStream );
     } finally {
       inputStream.close();
-    }
-  }
-
-  private static void tryWriteToFile( File file, String content ) throws IOException {
-    OutputStream outputStream = new FileOutputStream( file );
-    try {
-      writeToStream( outputStream, content );
-    } finally {
-      outputStream.close();
     }
   }
 
@@ -112,6 +94,24 @@ public class TestUtil {
       read = reader.read( buffer );
     }
     return content.toString();
+  }
+
+  public static void writeToFile( File file, String content ) {
+    try {
+      tryWriteToFile( file, content );
+    } catch( IOException exception ) {
+      String message = "Failed to write to file: " + file.getAbsolutePath();
+      throw new RuntimeException( message, exception );
+    }
+  }
+
+  private static void tryWriteToFile( File file, String content ) throws IOException {
+    OutputStream outputStream = new FileOutputStream( file );
+    try {
+      writeToStream( outputStream, content );
+    } finally {
+      outputStream.close();
+    }
   }
 
   private static void writeToStream( OutputStream outputStream, String content ) throws IOException
