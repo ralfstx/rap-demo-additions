@@ -8,7 +8,7 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-package org.eclipse.rap.demo.enrondata.internal.model;
+package org.eclipse.rap.demo.enrondata.internal.util;
 
 import java.util.ArrayList;
 import java.util.List;

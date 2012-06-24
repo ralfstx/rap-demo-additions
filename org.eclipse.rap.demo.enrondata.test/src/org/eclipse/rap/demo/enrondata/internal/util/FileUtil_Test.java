@@ -8,8 +8,10 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-package org.eclipse.rap.demo.enrondata.internal.model;
+package org.eclipse.rap.demo.enrondata.internal.util;
 
+import static org.eclipse.rap.demo.enrondata.internal.util.FileUtil.readFromFile;
+import static org.eclipse.rap.demo.enrondata.internal.util.FileUtil.writeToFile;
 import static org.eclipse.rap.demo.enrondata.test.internal.TestUtil.createFile;
 import static org.eclipse.rap.demo.enrondata.test.internal.TestUtil.createTempDir;
 import static org.eclipse.rap.demo.enrondata.test.internal.TestUtil.delete;
@@ -41,7 +43,7 @@ public class FileUtil_Test {
   public void readFromFile_empty() throws IOException {
     File file = createFile( tmpDir, "test", "" );
 
-    String result = FileUtil.readFromFile( file );
+    String result = readFromFile( file );
 
     assertEquals( "", result );
   }
@@ -51,7 +53,7 @@ public class FileUtil_Test {
     String content = "Line\tOne\nLine\tTwo\n";
     File file = createFile( tmpDir, "test", content );
 
-    String result = FileUtil.readFromFile( file );
+    String result = readFromFile( file );
 
     assertEquals( content, result );
   }
@@ -60,7 +62,7 @@ public class FileUtil_Test {
   public void writeToFile_createsFileEvenWithEmptyContent() throws IOException {
     File file = new File( tmpDir, "test" );
 
-    FileUtil.writeToFile( file, "" );
+    writeToFile( file, "" );
 
     assertTrue( file.exists() );
     assertEquals( 0, file.length() );
@@ -71,7 +73,7 @@ public class FileUtil_Test {
     String content = "Line\tOne\nLine\tTwo\n";
     File file = new File( tmpDir, "test" );
 
-    FileUtil.writeToFile( file, content );
+    writeToFile( file, content );
 
     assertEquals( content, TestUtil.readFromFile( file ) );
   }

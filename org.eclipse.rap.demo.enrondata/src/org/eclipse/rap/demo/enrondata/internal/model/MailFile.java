@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.rap.demo.enrondata.internal.model;
 
+import static org.eclipse.rap.demo.enrondata.internal.util.FileUtil.readFromFile;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -30,7 +32,7 @@ public class MailFile extends MailNode {
 
   public String getContent() throws IOException {
     checkFile();
-    return FileUtil.readFromFile( file );
+    return readFromFile( file );
   }
 
   private void checkFile() {

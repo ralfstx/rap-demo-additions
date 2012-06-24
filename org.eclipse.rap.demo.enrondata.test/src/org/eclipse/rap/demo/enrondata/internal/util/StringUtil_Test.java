@@ -8,8 +8,9 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-package org.eclipse.rap.demo.enrondata.internal.model;
+package org.eclipse.rap.demo.enrondata.internal.util;
 
+import static org.eclipse.rap.demo.enrondata.internal.util.StringUtil.splitString;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -22,40 +23,40 @@ public class StringUtil_Test {
 
   @Test( expected = NullPointerException.class )
   public void splitString_failsWithNullString() {
-    StringUtil.splitString( null, '.' );
+    splitString( null, '.' );
   }
 
   @Test
   public void splitString_emptyString() {
-    List<String> parts = StringUtil.splitString( "", '.' );
+    List<String> parts = splitString( "", '.' );
 
     assertEquals( list( "" ), parts );
   }
 
   @Test
   public void splitString_emptyParts() {
-    List<String> parts = StringUtil.splitString( ".", '.' );
+    List<String> parts = splitString( ".", '.' );
 
     assertEquals( list( "", "" ), parts );
   }
 
   @Test
   public void splitString_multipleParts() {
-    List<String> parts = StringUtil.splitString( "foo.bar", '.' );
+    List<String> parts = splitString( "foo.bar", '.' );
 
     assertEquals( list( "foo", "bar" ), parts );
   }
 
   @Test
   public void splitString_emptyPart() {
-    List<String> parts = StringUtil.splitString( "foo..bar", '.' );
+    List<String> parts = splitString( "foo..bar", '.' );
 
     assertEquals( list( "foo", "", "bar" ), parts );
   }
 
   @Test
   public void splitString_noOccurence() {
-    List<String> parts = StringUtil.splitString( "foo", '.' );
+    List<String> parts = splitString( "foo", '.' );
 
     assertEquals( list( "foo" ), parts );
   }

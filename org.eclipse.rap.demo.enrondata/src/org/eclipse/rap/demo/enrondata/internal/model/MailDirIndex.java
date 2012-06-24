@@ -10,7 +10,9 @@
  ******************************************************************************/
 package org.eclipse.rap.demo.enrondata.internal.model;
 
-import static org.eclipse.rap.demo.enrondata.internal.model.StringUtil.splitString;
+import static org.eclipse.rap.demo.enrondata.internal.util.FileUtil.readFromFile;
+import static org.eclipse.rap.demo.enrondata.internal.util.FileUtil.writeToFile;
+import static org.eclipse.rap.demo.enrondata.internal.util.StringUtil.splitString;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +35,7 @@ public class MailDirIndex {
   }
 
   public MailNode[] readNodes() throws IOException {
-    String content = FileUtil.readFromFile( indexFile );
+    String content = readFromFile( indexFile );
     List<String> lines = getLines( content );
     List<MailNode> nodes = readNodes( lines );
     return nodes.toArray( new MailNode[ nodes.size() ] );
@@ -80,7 +82,7 @@ public class MailDirIndex {
 
   public void writeNodes( MailNode... nodes ) throws IOException {
     String content = createIndex( nodes );
-    FileUtil.writeToFile( indexFile, content );
+    writeToFile( indexFile, content );
   }
 
   private static String createIndex( MailNode... nodes ) {
