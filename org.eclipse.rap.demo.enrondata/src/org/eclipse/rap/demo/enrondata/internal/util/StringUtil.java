@@ -17,6 +17,10 @@ import java.util.List;
 public class StringUtil {
 
   public static List<String> splitString( String string, char ch ) {
+    return splitString( string, ch, false );
+  }
+
+  public static List<String> splitString( String string, char ch, boolean skipElementLastIfEmpty ) {
     List<String> parts = new ArrayList<String>();
     int beginIndex = 0;
     int endIndex = string.indexOf( ch );
@@ -26,9 +30,15 @@ public class StringUtil {
       beginIndex = endIndex + 1;
       endIndex = string.indexOf( ch, beginIndex );
     }
-    String lastPart = string.substring( beginIndex, string.length() );
-    parts.add( lastPart );
+    if( !skipElementLastIfEmpty || beginIndex < string.length() ) {
+      String lastPart = string.substring( beginIndex, string.length() );
+      parts.add( lastPart );
+    }
     return parts;
+  }
+
+  public static List<String> getLines( String text ) {
+    return splitString( text, '\n', true );
   }
 
 }

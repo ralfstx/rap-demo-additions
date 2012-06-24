@@ -12,6 +12,7 @@ package org.eclipse.rap.demo.enrondata.internal.model;
 
 import static org.eclipse.rap.demo.enrondata.internal.util.FileUtil.readFromFile;
 import static org.eclipse.rap.demo.enrondata.internal.util.FileUtil.writeToFile;
+import static org.eclipse.rap.demo.enrondata.internal.util.StringUtil.getLines;
 import static org.eclipse.rap.demo.enrondata.internal.util.StringUtil.splitString;
 
 import java.io.File;
@@ -106,10 +107,6 @@ public class MailDirIndex {
     stringBuilder.append( '\t' );
     stringBuilder.append( node.getChildCount() );
     stringBuilder.append( '\n' );
-  }
-
-  private static List<String> getLines( String content ) {
-    return splitString( content, '\n' );
   }
 
   private static List<String> getFields( String line ) {

@@ -61,6 +61,20 @@ public class StringUtil_Test {
     assertEquals( list( "foo" ), parts );
   }
 
+  @Test
+  public void splitString_skipsEmptyLastElement() {
+    List<String> parts = splitString( "..", '.', true );
+
+    assertEquals( list( "", "" ), parts );
+  }
+
+  @Test
+  public void getLines_skipEmptyLastLine() {
+    List<String> lines = StringUtil.getLines( "one\ntwo\n" );
+
+    assertEquals( list( "one", "two" ), lines );
+  }
+
   private static List<String> list( String... strings ) {
     ArrayList<String> list = new ArrayList<String>();
     for( String string : strings ) {

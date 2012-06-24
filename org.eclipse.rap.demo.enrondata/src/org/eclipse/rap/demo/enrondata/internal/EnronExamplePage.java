@@ -22,6 +22,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.rap.demo.enrondata.internal.model.Mail;
 import org.eclipse.rap.demo.enrondata.internal.model.MailDir;
 import org.eclipse.rap.demo.enrondata.internal.model.MailDirIndex;
 import org.eclipse.rap.demo.enrondata.internal.model.MailFile;
@@ -197,44 +198,6 @@ public class EnronExamplePage implements IExamplePage {
       path = DEFAULT_DATASET_DIR;
     }
     return path;
-  }
-
-  private static class Mail {
-
-    private String sender;
-    private String subject;
-    private final String content;
-
-    public Mail( String text ) {
-      String[] lines = text.split( "\n" );
-      StringBuilder buffer = new StringBuilder();
-      boolean headerFinished = false;
-      for( String line : lines ) {
-        if( headerFinished ) {
-          buffer.append( line );
-          buffer.append( "\n" );
-        } else if( line.startsWith( "From:" ) ) {
-          sender = line.substring( "From:".length() ).trim();
-        } else if( line.startsWith( "Subject:" ) ) {
-          subject = line.substring( "Subject:".length() ).trim();
-        } else if( "".equals( line.trim() ) ) {
-          headerFinished = true;
-        }
-      }
-      content = buffer.toString();
-    }
-
-    public String getSender() {
-      return sender;
-    }
-
-    public String getSubject() {
-      return subject;
-    }
-
-    public String getContent() {
-      return content;
-    }
   }
 
   private static final class EnronLabelProvider extends CellLabelProvider {
