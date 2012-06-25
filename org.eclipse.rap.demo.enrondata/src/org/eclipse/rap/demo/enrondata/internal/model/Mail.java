@@ -26,6 +26,7 @@ public class Mail {
     StringBuilder buffer = new StringBuilder();
     boolean headerFinished = false;
     for( String line : lines ) {
+      line = stripWindowsLinebreak( line );
       if( headerFinished ) {
         buffer.append( line );
         buffer.append( '\n' );
@@ -41,14 +42,21 @@ public class Mail {
   }
 
   public String getSender() {
-    return sender;
+    return sender != null ? new String( sender ) : "";
   }
 
   public String getSubject() {
-    return subject;
+    return subject != null ? new String( subject ) : "";
   }
 
   public String getContent() {
-    return content;
+    return new String( content );
+  }
+
+  private static String stripWindowsLinebreak( String line ) {
+    if( line.endsWith( "\r" ) ) {
+      return line.substring( 0, line.length() - 1 );
+    }
+    return line;
   }
 }
