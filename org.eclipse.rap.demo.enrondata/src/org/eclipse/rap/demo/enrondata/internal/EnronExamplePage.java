@@ -29,11 +29,9 @@ import org.eclipse.rap.demo.enrondata.internal.model.MailFile;
 import org.eclipse.rap.demo.enrondata.internal.model.MailNode;
 import org.eclipse.rap.examples.ExampleUtil;
 import org.eclipse.rap.examples.IExamplePage;
-import org.eclipse.rwt.internal.widgets.JSExecutor;
+import org.eclipse.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
@@ -41,11 +39,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
 
-@SuppressWarnings( "restriction" )
 public class EnronExamplePage implements IExamplePage {
 
   private static final String DEFAULT_DATASET_DIR = "/data/enron/maildir";
@@ -67,21 +63,18 @@ public class EnronExamplePage implements IExamplePage {
     ExampleUtil.createHeading( composite, "Enron Dataset (520.929 items)", 1 );
     composite.setLayout( ExampleUtil.createGridLayout( 1, false, true, true ) );
     composite.setLayoutData( ExampleUtil.createHorzFillData() );
-    Link label = new Link( composite, SWT.WRAP );
-    label.setText( "This example demonstates how a large dataset can be displayed on demand"
-                     + " using a virtual JFace tree viewer with a lazy content provider."
-                     + " The example uses the Enron dataset, a public domain email dataset that"
-                     + " contains half a million emails from about 150 users.\n"
-                     + " The Enron dataset is available at <a>http://www.cs.cmu.edu/~enron/</a>.\n"
-                     + " The source code of this example page currently resides at"
-                     + " <a>https://github.com/ralfstx/rap-demo-additions</a>." );
+    Label label = new Label( composite, SWT.WRAP );
+    label.setData( RWT.MARKUP_ENABLED, Boolean.TRUE );
+    label.setText( "This example demonstates how a <em>large dataset</em> can be displayed"
+                   + " using a virtual JFace tree viewer with a lazy content provider."
+                   + " The example uses the"
+                   + " <a href=\"http://en.wikipedia.org/wiki/Enron_scandal\">Enron</a>"
+                   + " dataset, that contains half a million emails from about 150 users."
+                   + " The dataset is available in the"
+                   + " <a href=\"http://www.cs.cmu.edu/~enron/\">public domain</a>.<br/>"
+                   + " The source code of this example page currently resides on"
+                   + " <a href=\"https://github.com/ralfstx/rap-demo-additions\">github</a>." );
     label.setLayoutData( ExampleUtil.createHorzFillData() );
-    label.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        JSExecutor.executeJS( "window.location.href='" + e.text + "';" );
-      }
-    } );
   }
 
   private void createMainArea( Composite parent ) {
