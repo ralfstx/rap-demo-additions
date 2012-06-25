@@ -19,6 +19,12 @@ import java.io.IOException;
 public class MailFile extends MailNode {
 
   private final File file;
+  private Details details;
+
+  MailFile( MailDir parent, String name, String sender, String subject ) {
+    this( parent, name );
+    details = new Details( sender, subject );
+  }
 
   MailFile( MailDir parent, String name ) {
     super( parent, name );
@@ -35,10 +41,39 @@ public class MailFile extends MailNode {
     return readFromFile( file );
   }
 
+  public String getSender() throws IOException {
+    resolveDetails();
+    return details.sender;
+  }
+
+  public String getSubject() throws IOException {
+    resolveDetails();
+    return details.subject;
+  }
+
   private void checkFile() {
     if( !file.isFile() ) {
       throw new IllegalArgumentException( "Not a file: " + file.getAbsolutePath() );
     }
   }
 
+  private void resolveDetails() throws IOException {
+    if( details == null ) {
+      String content = readFromFile( file );
+      Mail mail = new Mail( content );
+      String sender = mail.getSender();
+      String subject = mail.getSubject();
+      details = new Details( sender, subject );
+    }
+  }
+
+  private static final class Details {
+    public final String sender;
+    public final String subject;
+
+    public Details( String sender, String subject ) {
+      this.sender = sender;
+      this.subject = subject;
+    }
+  }
 }

@@ -186,6 +186,18 @@ public class MailDir_Test {
     assertEquals( "child1", result.getName() );
   }
 
+  @Test
+  public void children_resolvedOnlyOnce() {
+    File root = createDirectory( parent.directory, "maildir" );
+    File file = createFile( root, "file", "" );
+    MailDir mailDir = new MailDir( parent, "maildir", -1 );
+    mailDir.getChildren();
+    file.delete();
+
+    MailNode[] children = mailDir.getChildren();
+    assertEquals( 1, children.length );
+  }
+
   private static String concatNodeNames( MailNode[] nodes ) {
     StringBuilder builder = new StringBuilder();
     for( int i = 0; i < nodes.length; i++ ) {

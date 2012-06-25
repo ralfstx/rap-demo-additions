@@ -21,6 +21,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.rap.demo.enrondata.internal.util.FileUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -90,6 +91,49 @@ public class MailFile_Test {
     MailFile mailFile = new MailFile( parent, "test" );
 
     assertEquals( "content", mailFile.getContent() );
+  }
+
+  @Test
+  public void getSender() throws IOException {
+    createFile( parent.directory, "test", getExampleMail() );
+    MailFile mailFile = new MailFile( parent, "test" );
+
+    assertEquals( "john.doe@nowhere.com", mailFile.getSender() );
+  }
+
+  @Test
+  public void getSubject() throws IOException {
+    createFile( parent.directory, "test", getExampleMail() );
+    MailFile mailFile = new MailFile( parent, "test" );
+
+    assertEquals( "Re: Foo bar", mailFile.getSubject() );
+  }
+
+  @Test
+  public void getSenderAndSubject_fromConstructor() throws IOException {
+    MailFile mailFile = new MailFile( parent, "test", "sender", "subject" );
+
+    assertEquals( "sender", mailFile.getSender() );
+    assertEquals( "subject", mailFile.getSubject() );
+  }
+
+  @Test
+  public void details_resolvedOnlyOnce() throws IOException {
+    File file = createFile( parent.directory, "test", getExampleMail() );
+    MailFile mailFile = new MailFile( parent, "test" );
+    mailFile.getSubject();
+    FileUtil.writeToFile( file, "" );
+
+    assertEquals( "john.doe@nowhere.com", mailFile.getSender() );
+    assertEquals( "Re: Foo bar", mailFile.getSubject() );
+  }
+
+  private static String getExampleMail() {
+    return "Message-ID: <4711.foo@bar>\n"
+           + "From: john.doe@nowhere.com\n"
+           + "Subject: Re: Foo bar\n"
+           + "\n"
+           + "mail content\n";
   }
 
 }

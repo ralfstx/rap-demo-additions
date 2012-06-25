@@ -141,15 +141,29 @@ public class MailDirIndex_Test {
   @Test
   public void readNodes_setsChildCount() throws IOException {
     File childDir = createDirectory( parent.directory, "child" );
-    createDirectory( childDir, "nested-1" );
-    createDirectory( childDir, "nested-2" );
+    File nested = createDirectory( childDir, "nested" );
     MailDirIndex index = new MailDirIndex( parent );
     index.create();
+    nested.delete();
 
     MailNode[] nodes = index.readNodes();
 
     MailDir found = ( MailDir )nodes[ 0 ];
-    assertEquals( 2, found.getChildCount() );
+    assertEquals( 1, found.getChildCount() );
+  }
+
+  @Test
+  public void readNodes_setsSenderAndSubject() throws IOException {
+    File file = createFile( parent.directory, "file-1", getExampleMail() );
+    MailDirIndex index = new MailDirIndex( parent );
+    index.create();
+    file.delete();
+
+    MailNode[] nodes = index.readNodes();
+
+    MailFile found = ( MailFile )nodes[ 0 ];
+    assertEquals( "john.doe@nowhere.com", found.getSender() );
+    assertEquals( "Re: Foo bar", found.getSubject() );
   }
 
   @Test
@@ -184,6 +198,14 @@ public class MailDirIndex_Test {
       fail();
     } catch( RuntimeException e ) {
     }
+  }
+
+  private static String getExampleMail() {
+    return "Message-ID: <4711.foo@bar>\n"
+           + "From: john.doe@nowhere.com\n"
+           + "Subject: Re: Foo bar\n"
+           + "\n"
+           + "mail content\n";
   }
 
 }

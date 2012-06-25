@@ -78,7 +78,9 @@ public class MailDirIndex {
 
   private MailNode readMailFile( List<String> fields ) {
     String name = fields.get( 1 );
-    return new MailFile( mailDir, name );
+    String sender = fields.get( 2 );
+    String subject = fields.get( 3 );
+    return new MailFile( mailDir, name, sender, subject );
   }
 
   public void create() throws IOException {
@@ -100,12 +102,33 @@ public class MailDirIndex {
     }
   }
 
-  private static void appendNode( StringBuilder stringBuilder, MailNode node ) {
-    stringBuilder.append( node instanceof MailDir ? "d" : "f" );
+  private static void appendNode( StringBuilder stringBuilder, MailNode node ) throws IOException {
+    if( node instanceof MailDir ) {
+      appendMailDir( stringBuilder, ( MailDir )node );
+    } else {
+      appendMailFile( stringBuilder, ( MailFile )node );
+    }
+  }
+
+  private static void appendMailDir( StringBuilder stringBuilder, MailDir mailDir ) {
+    stringBuilder.append( 'd' );
     stringBuilder.append( '\t' );
-    stringBuilder.append( node.getName() );
+    stringBuilder.append( mailDir.getName() );
     stringBuilder.append( '\t' );
-    stringBuilder.append( node.getChildCount() );
+    stringBuilder.append( mailDir.getChildCount() );
+    stringBuilder.append( '\n' );
+  }
+
+  private static void appendMailFile( StringBuilder stringBuilder, MailFile mailFile )
+    throws IOException
+  {
+    stringBuilder.append( 'f' );
+    stringBuilder.append( '\t' );
+    stringBuilder.append( mailFile.getName() );
+    stringBuilder.append( '\t' );
+    stringBuilder.append( mailFile.getSender() );
+    stringBuilder.append( '\t' );
+    stringBuilder.append( mailFile.getSubject() );
     stringBuilder.append( '\n' );
   }
 
