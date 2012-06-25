@@ -248,8 +248,23 @@ public class EnronExamplePage implements IExamplePage {
     }
 
     private void updateName( ViewerCell cell, MailNode node ) {
-      cell.setText( node.getName() );
-      cell.setImage( node instanceof MailDir ? folderImage : fileImage );
+      if( node instanceof MailDir ) {
+        cell.setText( node.getName() );
+        cell.setImage( folderImage );
+      } else {
+        cell.setText( getSubject( ( MailFile )node ) );
+        cell.setImage( fileImage );
+      }
+    }
+
+    private static String getSubject( MailFile mailFile ) {
+      String subject;
+      try {
+        subject = mailFile.getSubject();
+      } catch( IOException exception ) {
+        throw new RuntimeException( exception );
+      }
+      return subject.length() != 0 ? subject : "No Subject";
     }
 
     private static Image createImage( Device device, String name ) {
