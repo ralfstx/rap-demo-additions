@@ -29,7 +29,7 @@ import org.eclipse.rap.demo.enrondata.internal.model.MailFile;
 import org.eclipse.rap.demo.enrondata.internal.model.MailNode;
 import org.eclipse.rap.examples.ExampleUtil;
 import org.eclipse.rap.examples.IExamplePage;
-import org.eclipse.rwt.RWT;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Color;
